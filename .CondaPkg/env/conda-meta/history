@@ -1,0 +1,30 @@
+==> 2024-03-06 16:37:17 <==
+# cmd: /home/mikheev/.julia/artifacts/87052ac9aec71548f804b30280151288cb1ed40e/bin/micromamba -r /home/mikheev/.julia/scratchspaces/0b3b1443-0f03-428d-bdfb-f27f9c1191ea/root create -y -p /home/mikheev/Desktop/ERPgnostics/.CondaPkg/env --override-channels --no-channel-priority libstdcxx-ng[version='>=3.4,<13.0'] pip[version='>=22.0.0'] python[version='>=3.4,<4'] python[version='>=3.7,<4',channel='anaconda'] -c anaconda -c conda-forge
+# conda version: 3.8.0
++https://conda.anaconda.org/conda-forge/linux-64::libstdcxx-ng-12.3.0-h0f45ef3_5
++https://conda.anaconda.org/conda-forge/linux-64::_libgcc_mutex-0.1-conda_forge
++https://conda.anaconda.org/conda-forge/linux-64::ld_impl_linux-64-2.40-h41732ed_0
++https://conda.anaconda.org/conda-forge/linux-64::ca-certificates-2024.2.2-hbcca054_0
++https://conda.anaconda.org/conda-forge/linux-64::libgomp-13.2.0-h807b86a_5
++https://conda.anaconda.org/conda-forge/linux-64::_openmp_mutex-4.5-2_gnu
++https://conda.anaconda.org/conda-forge/linux-64::libgcc-ng-13.2.0-h807b86a_5
++https://conda.anaconda.org/conda-forge/linux-64::libzlib-1.2.13-hd590300_5
++https://conda.anaconda.org/conda-forge/linux-64::openssl-3.2.1-hd590300_0
++https://conda.anaconda.org/conda-forge/linux-64::ncurses-6.4-h59595ed_2
++https://conda.anaconda.org/conda-forge/linux-64::libexpat-2.5.0-hcb278e6_1
++https://conda.anaconda.org/conda-forge/linux-64::bzip2-1.0.8-hd590300_5
++https://conda.anaconda.org/conda-forge/linux-64::zlib-1.2.13-hd590300_5
++https://conda.anaconda.org/conda-forge/linux-64::tk-8.6.13-noxft_h4845f30_101
++https://conda.anaconda.org/conda-forge/linux-64::libsqlite-3.45.1-h2797004_0
++https://conda.anaconda.org/conda-forge/linux-64::readline-8.2-h8228510_1
++https://conda.anaconda.org/conda-forge/linux-64::expat-2.5.0-hcb278e6_1
++https://conda.anaconda.org/conda-forge/linux-64::sqlite-3.45.1-h2c6b66d_0
++https://conda.anaconda.org/conda-forge/noarch::tzdata-2024a-h0c530f3_0
++https://conda.anaconda.org/anaconda/linux-64::libffi-3.4.4-h6a678d5_0
++https://conda.anaconda.org/anaconda/linux-64::xz-5.4.2-h5eee18b_0
++https://conda.anaconda.org/anaconda/linux-64::libuuid-1.41.5-h5eee18b_0
++https://conda.anaconda.org/anaconda/linux-64::python-3.12.0-h996f2a0_0
++https://conda.anaconda.org/conda-forge/noarch::pip-24.0-pyhd8ed1ab_0
++https://conda.anaconda.org/conda-forge/noarch::setuptools-69.1.1-pyhd8ed1ab_0
++https://conda.anaconda.org/conda-forge/noarch::wheel-0.42.0-pyhd8ed1ab_0
+# update specs: ["libstdcxx-ng[version='>=3.4,<13.0']", "pip[version='>=22.0.0']", "python[version='>=3.4,<4']", "anaconda::python[version='>=3.7,<4']"]

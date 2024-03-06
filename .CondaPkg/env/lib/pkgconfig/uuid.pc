@@ -1,0 +1,11 @@
+prefix=/home/mikheev/Desktop/ERPgnostics/.CondaPkg/env
+exec_prefix=/home/mikheev/Desktop/ERPgnostics/.CondaPkg/env
+libdir=/home/mikheev/Desktop/ERPgnostics/.CondaPkg/env/lib
+includedir=/home/mikheev/Desktop/ERPgnostics/.CondaPkg/env/include
+
+Name: uuid
+Description: Universally unique id library
+Version: 2.32.1
+Requires:
+Cflags: -I${includedir}/uuid
+Libs: -L${libdir} -luuid
