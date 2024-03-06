@@ -31,11 +31,6 @@ We aimed to plot the following patterns
 - linear effect (bar with diverging colors)
 """
 
-# ╔═╡ a039daeb-4c04-4551-94e5-417bc2342a9a
-md"""
-## Sigmoid
-"""
-
 # ╔═╡ 5e6ff4bd-14e8-4d4f-a872-76c26371b36f
 begin
 	dat, evts = UnfoldSim.predef_eeg(; 
@@ -48,6 +43,11 @@ begin
 	evts = filter(row -> row.Δlatency > 0, evts)
 	
 end
+
+# ╔═╡ a039daeb-4c04-4551-94e5-417bc2342a9a
+md"""
+## Sigmoid
+"""
 
 # ╔═╡ 2ac0e909-c466-408b-8ce8-1f90ae902895
 begin
