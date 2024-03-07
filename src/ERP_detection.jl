@@ -6,13 +6,13 @@ using InteractiveUtils
 
 # ╔═╡ c9e88600-b9e8-11ee-0a01-295ae0cf5d75
 begin
-	using CairoMakie
-	using UnfoldMakie
-	using UnfoldSim
-	using Unfold
-	using Statistics
-	using Random
-	using Images
+    using CairoMakie
+    using UnfoldMakie
+    using UnfoldSim
+    using Unfold
+    using Statistics
+    using Random
+    using Images
 end
 
 # ╔═╡ 1b22b176-57f3-49a0-9654-7b349339de89
@@ -32,13 +32,13 @@ Data simulation
 
 # ╔═╡ 4ea3619e-656e-4d4e-b938-b2a8693b4423
 begin
-	dat, evts =
-	            UnfoldSim.predef_eeg(; onset = LogNormalOnset(μ =3.5, σ = 0.4), noiselevel = 5)
-	dat_e, times = Unfold.epoch(dat, evts, [-0.1, 1], 100)
-	evts, dat_e = Unfold.dropMissingEpochs(evts, dat_e)
-	evts.Δlatency = vcat(0, diff(evts.latency))
-	dat_e = dat_e[1, :, :]
-	evts = filter(row -> row.Δlatency > 0, evts)
+    dat, evts =
+        UnfoldSim.predef_eeg(; onset = LogNormalOnset(μ = 3.5, σ = 0.4), noiselevel = 5)
+    dat_e, times = Unfold.epoch(dat, evts, [-0.1, 1], 100)
+    evts, dat_e = Unfold.dropMissingEpochs(evts, dat_e)
+    evts.Δlatency = vcat(0, diff(evts.latency))
+    dat_e = dat_e[1, :, :]
+    evts = filter(row -> row.Δlatency > 0, evts)
 end
 
 # ╔═╡ 46cb8fda-f4bd-4ac7-8350-fa36e6a0627d
@@ -57,7 +57,7 @@ Normalisation of data to get read of vertical bar.
 
 # ╔═╡ 2646d2f0-9239-475c-b2d7-ec1e966d2b71
 # normalisation of data
-dat_norm = dat_e[:,:] .- mean(dat_e, dims=2)
+dat_norm = dat_e[:, :] .- mean(dat_e, dims = 2)
 
 # ╔═╡ 7534349e-e1f2-4109-8908-e42e9336e277
 plot_erpimage(times, dat_norm; sortvalues = evts.Δlatency)
@@ -65,23 +65,20 @@ plot_erpimage(times, dat_norm; sortvalues = evts.Δlatency)
 # ╔═╡ a17edfdc-29a1-4b79-a76d-b1ac71159d5c
 # 2d Gaussian kernel for data smoothing
 function filt(img)
-	filtered_data = UnfoldMakie.imfilter(
-        img,
-        UnfoldMakie.Kernel.gaussian((1, max(30, 0))),
-    )
-	#Images.imresize(filtered_data, (25,25))
+    filtered_data = UnfoldMakie.imfilter(img, UnfoldMakie.Kernel.gaussian((1, max(30, 0))))
+    #Images.imresize(filtered_data, (25,25))
 end
 
 # ╔═╡ adce5b08-fcff-49f6-9cd0-d211c4e4c87d
 begin
-	dat_erp = (dat_norm[:, sortperm(evts.Δlatency)])
-	size(dat_erp)
+    dat_erp = (dat_norm[:, sortperm(evts.Δlatency)])
+    size(dat_erp)
 end
 
 # ╔═╡ 172a82e2-5d69-4383-b1ed-f4bc08aeff61
 begin
-	dat_noerp = (dat_norm[:, shuffle(1:end)])
-	size(dat_noerp)
+    dat_noerp = (dat_norm[:, shuffle(1:end)])
+    size(dat_noerp)
 end
 
 # ╔═╡ adb6fc2e-d1f2-4c07-9ada-0f020991bd7a
@@ -91,37 +88,37 @@ md"""
 
 # ╔═╡ f5a58952-0fd6-4dec-9b89-ac855a8904c2
 begin
-	f = Figure()
-	plot_erpimage!(f[1, 1], times, dat_erp)
-	plot_erpimage!(f[2, 1], times, dat_noerp)
-	for (label, layout) in zip(["ERP", "No ERP"], [f[1, 1], f[2, 1]])
-    Label(
-        layout[1, 1, TopLeft()],
-        label,
-        font = :bold,
-        padding = (0, -250, 25, 0),
-        halign = :right,
-    )
-	end
-	f
+    f = Figure()
+    plot_erpimage!(f[1, 1], times, dat_erp)
+    plot_erpimage!(f[2, 1], times, dat_noerp)
+    for (label, layout) in zip(["ERP", "No ERP"], [f[1, 1], f[2, 1]])
+        Label(
+            layout[1, 1, TopLeft()],
+            label,
+            font = :bold,
+            padding = (0, -250, 25, 0),
+            halign = :right,
+        )
+    end
+    f
 end
 
 
 # ╔═╡ 00b8df18-c10a-421f-8249-d2f463c2e6cc
 begin
-	f_t = Figure()
-	plot_erpimage!(f_t[1, 1], times, filt(dat_erp))
-	plot_erpimage!(f_t[2, 1], times, filt(dat_noerp))
-	for (label, layout) in zip(["ERP", "No ERP"], [f_t[1, 1], f_t[2, 1]])
-    Label(
-        layout[1, 1, TopLeft()],
-        label,
-        font = :bold,
-        padding = (0, -250, 25, 0),
-        halign = :right,
-    )
-	end
-	f_t
+    f_t = Figure()
+    plot_erpimage!(f_t[1, 1], times, filt(dat_erp))
+    plot_erpimage!(f_t[2, 1], times, filt(dat_noerp))
+    for (label, layout) in zip(["ERP", "No ERP"], [f_t[1, 1], f_t[2, 1]])
+        Label(
+            layout[1, 1, TopLeft()],
+            label,
+            font = :bold,
+            padding = (0, -250, 25, 0),
+            halign = :right,
+        )
+    end
+    f_t
 end
 
 # ╔═╡ 8b0c4905-ca26-405b-9030-e8c2da4aa7b4
@@ -137,39 +134,39 @@ filt(dat_noerp)
 
 # ╔═╡ 69123d06-46aa-4110-8e9c-4ed38b5e240f
 begin
-	print("erp:    ")
-	print(entropy(filt(dat_erp)))
-	print("\nnoerp:    ")
-	print(entropy(filt(dat_noerp)))
+    print("erp:    ")
+    print(entropy(filt(dat_erp)))
+    print("\nnoerp:    ")
+    print(entropy(filt(dat_noerp)))
 end
 
 # ╔═╡ f30890f8-c107-494c-96b4-6aab3e017e01
 # counting entropy of the data 
 begin
-	ent_erp = zeros(100)
-	for k = 1:100
-		ent_erp[k] = entropy(filt(dat_erp[:, shuffle(1:end)]))
-	end
-	entropy(filt(dat_erp))
+    ent_erp = zeros(100)
+    for k = 1:100
+        ent_erp[k] = entropy(filt(dat_erp[:, shuffle(1:end)]))
+    end
+    entropy(filt(dat_erp))
 end
 
 # ╔═╡ 2d0d60c6-f999-4b46-b777-c640ebfc8d4b
 begin
-	ent_noerp = zeros(100)
-	for k = 1:100
-		ent_noerp[k] = entropy(filt(dat_noerp[:, shuffle(1:end)]))
-	end
-	entropy(filt(dat_noerp))
+    ent_noerp = zeros(100)
+    for k = 1:100
+        ent_noerp[k] = entropy(filt(dat_noerp[:, shuffle(1:end)]))
+    end
+    entropy(filt(dat_noerp))
 end
 
 # ╔═╡ 018c378d-bd56-4ae7-b1d0-3d747ba2550b
 begin
-	f1 = Figure()
-	hist(f1[1, 1], ent_erp)
-	vlines!([entropy(filt(dat_erp))])
-	hist(f1[1, 2], ent_noerp)
-	vlines!([entropy(filt(dat_noerp))])
-	f1
+    f1 = Figure()
+    hist(f1[1, 1], ent_erp)
+    vlines!([entropy(filt(dat_erp))])
+    hist(f1[1, 2], ent_noerp)
+    vlines!([entropy(filt(dat_noerp))])
+    f1
 end
 # the line meansentropy, if it far away it means that it is untypical for shuffled distribution
 # if it is untypical - there is a pattern 
@@ -194,22 +191,24 @@ entropy([0, 0, 0, 1, 1, 1])
 entropy([0, 0, 0, 0, 0, 0])
 
 # ╔═╡ afd39d60-230a-417f-ba58-0b15e1478a6c
-entropy([[1,2]  [4,5]  [7,8]])
+entropy([[1, 2] [4, 5] [7, 8]])
 
 # ╔═╡ 12ff0f8d-9cab-44b7-860e-98106ba7019f
-entropy([[0, 0]  [0, 0]  [0, 0]])
+entropy([[0, 0] [0, 0] [0, 0]])
 
 # ╔═╡ 16bb37ce-9a05-4c64-b080-69532e7ace25
-entropy(
-	[[0, 0, 1]  
-	[0, 1, 0]  
-	[1, 0, 0]])
+entropy([
+    [0, 0, 1]
+    [0, 1, 0]
+    [1, 0, 0]
+])
 
 # ╔═╡ 504464f3-a1a3-4c8a-8f89-4d94c38aec46
-entropy(
-	[[1, 1, 1]  
-	[0, 0, 0]  
-	[0, 0, 0]])
+entropy([
+    [1, 1, 1]
+    [0, 0, 0]
+    [0, 0, 0]
+])
 
 # ╔═╡ d475f4d9-d114-4a31-b37a-b9a30fd5477f
 md"""
@@ -232,28 +231,32 @@ md"""
 
 # ╔═╡ f41d79c5-01d2-4701-92da-d8eef592609e
 begin
-	range_erp = zeros(100)
-	for k = 1:100
-		range_erp[k] = maximum(filt(dat_erp[:, shuffle(1:end)])) - minimum(filt(dat_erp[:, shuffle(1:end)]))
-	end
-	range_erp
+    range_erp = zeros(100)
+    for k = 1:100
+        range_erp[k] =
+            maximum(filt(dat_erp[:, shuffle(1:end)])) -
+            minimum(filt(dat_erp[:, shuffle(1:end)]))
+    end
+    range_erp
 end
 
 # ╔═╡ 3c330eeb-e0aa-4628-874a-f4923fd090c5
 begin
-	range_noerp = zeros(100)
-	for k = 1:100
-		range_noerp[k] = minimum(filt(dat_erp[:, shuffle(1:end)])) + maximum(filt(dat_erp[:, shuffle(1:end)]))
-	end
-	range_noerp
+    range_noerp = zeros(100)
+    for k = 1:100
+        range_noerp[k] =
+            minimum(filt(dat_erp[:, shuffle(1:end)])) +
+            maximum(filt(dat_erp[:, shuffle(1:end)]))
+    end
+    range_noerp
 end
 
 # ╔═╡ 2fbb1209-11aa-4d1b-bd37-c245f21a7a01
 begin
-	f2 = Figure()
-	hist(f2[1, 1], range_erp)
-	hist(f2[1, 2], range_noerp)
-	f2
+    f2 = Figure()
+    hist(f2[1, 1], range_erp)
+    hist(f2[1, 2], range_noerp)
+    f2
 end
 
 # ╔═╡ ea943d44-4b02-4848-95ad-b8c08f3581d8
@@ -268,7 +271,7 @@ md"""
 
 
 # ╔═╡ 5c4f1da6-9eb9-487d-a8fc-3311b95a6ced
-heatmap(abs.(filt(dat_erp)).>2) # instead of 2 it should be 70% percentile for instance
+heatmap(abs.(filt(dat_erp)) .> 2) # instead of 2 it should be 70% percentile for instance
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
