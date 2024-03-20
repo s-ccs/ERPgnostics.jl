@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.37
+# v0.19.40
 
 using Markdown
 using InteractiveUtils
@@ -29,8 +29,8 @@ end
 # ╔═╡ 800822b9-4cf8-4c5d-a829-11798d8d581a
 md"""
 Here we want to plot the following patterns in ONE data set:
-1. Sigmoid
-2. Vertical band
+1. Sigmoid (missing)
+2. Vertical band (?)
 3. Horizontal band
 4. Abline band
 5. One-sided fan
@@ -43,6 +43,9 @@ Here we want to plot the following patterns in ONE data set:
 md"""
 ## Simulating functions
 """
+
+# ╔═╡ 2cde7e6f-9c89-48c8-addb-519d5a970bfb
+
 
 # ╔═╡ c01cca96-22cd-4758-af2b-b21fa8dec44c
 md"""
@@ -67,6 +70,13 @@ Base.length(c::TimeVaryingComponent) = c.maxlength
 
 # ╔═╡ 2d5ffccd-61bb-446b-b2a5-fd0c39075ed3
 begin
+    # this is for ab-line /
+    function basis_linear(evts, maxlength)
+        basis =
+            pad_array.(Ref(UnfoldSim.DSP.hanning(50)), Int.(0 .- evts.duration_linear), 0)
+        return basis
+    end
+
     # this is for the asymetrical fan |/
     function basis_lognormal(evts, maxlength)
         basis =
@@ -113,9 +123,10 @@ function simulate_alldata()
     design = SingleSubjectDesign(;
         conditions = Dict(
             :condition => ["car", "face"],
-            :continuous => range(-2, 2, length = 10),
-            :duration => range(20, 100, length = 10),
-            :durationB => range(10, 30, length = 10),
+            :continuous => range(-2, 2, length = 8),
+            :duration => range(20, 100, length = 8),
+            :durationB => range(10, 30, length = 8),
+            :duration_linear => range(5, 40, length = 8),
         ),
         event_order_function = x -> shuffle(MersenneTwister(1), x),
     )
@@ -131,29 +142,32 @@ function simulate_alldata()
     p3 = LinearModelComponent(; basis = p300(), formula = @formula(0 ~ 1), β = [5])
     componentA = TimeVaryingComponent(basis_lognormal, 100, 5)
     componentB = TimeVaryingComponent(basis_hanning, 100, -10)
+    componentC = TimeVaryingComponent(basis_linear, 100, 5)
 
     data, evts = simulate(
         MersenneTwister(1),
         design,
-        [p1, n1, p3, componentA, componentB],
-        UniformOnset(; width = 30, offset = 30),
+        [p1, n1, p3, componentA, componentB, componentC],
+        LogNormalOnset(; μ = 3.2, σ = 0.5),#UniformOnset(; width = 30, offset = 30),
         PinkNoise(),
         return_epoched = true,
     )
     evts.Δlatency = vcat(diff(evts.latency), 0) # divide time on epochs
     data = data .- mean(data, dims = 2) # normalisation
     return data, evts
+    #@info UnfoldSim.simulate_component(MersenneTwister(1),componentC,design)
 end
 
 # ╔═╡ 99343eb8-1a85-4481-9d82-fa5a9993e3ca
 let
     dat, evts = simulate_alldata()
+    @info size(dat)
     f = Figure(size = (800, 1200))
     plot_erpimage!(
         f[end+1, 1],
         dat;
         sortvalues = evts.Δlatency,
-        axis = (; title = "Abline; sorted by Δlatency"),
+        axis = (; title = "Sigmoid; sorted by Δlatency"),
     )
     plot_erpimage!(
         f[end+1, 1],
@@ -178,6 +192,12 @@ let
         dat;
         sortvalues = evts.continuous,
         axis = (; title = "Hourglass bar; sorted by continuous"),
+    )
+    plot_erpimage!(
+        f[end+1, 1],
+        dat;
+        sortvalues = evts.duration_linear,
+        axis = (; title = "Abline; sorted by duration_linear"),
     )
     f
 end
@@ -206,6 +226,7 @@ end
 # ╟─800822b9-4cf8-4c5d-a829-11798d8d581a
 # ╟─cdb771b6-35d1-4c2c-a37f-be8459dc2814
 # ╠═cec679f9-62e9-49c4-a3b3-fbfcbdadb221
+# ╠═2cde7e6f-9c89-48c8-addb-519d5a970bfb
 # ╟─c01cca96-22cd-4758-af2b-b21fa8dec44c
 # ╠═99343eb8-1a85-4481-9d82-fa5a9993e3ca
 # ╟─4012631a-816f-4c61-ae22-ac867c49cfb4

@@ -37,10 +37,14 @@ typeof(data_epoch0[32, :, :])
 
 
 size(data_epoch0)
-save("/home/mikheev/Desktop/ERPgnostics/data/test.h5", data_epoch0)
 
-h5open("data/test.hdf5", "w") do file
-    write(file, "data/test.hdf5", data_epoch0[32, :, :])  # alternatively, say "@write file A"
+h5open("data/single.hdf5", "w") do file
+    write(file, "data/single.hdf5", data_epoch0[32, :, :])  # alternatively, say "@write file A"
+    close(file)
+end
+
+h5open("data/mult.hdf5", "w") do file
+    write(file, "data/mult.hdf5", data_epoch0)  # alternatively, say "@write file A"
     close(file)
 end
 
@@ -49,7 +53,7 @@ CSV.write("data/events.csv", events_epoch)
 
 # formatting
 using JuliaFormatter
-format_file("src/6patters_in_one_data.jl")
-format_file("src/6patters_sep.jl")
+format_file("src/patters_in_one_data.jl")
+format_file("src/patters_sep.jl")
 format_file("src/validation_data.jl")
 format_file("src/ERP_detection.jl")

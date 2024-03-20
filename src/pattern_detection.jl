@@ -177,7 +177,7 @@ On the pictures above you can see a line and distribution.
 
 The line means entropy of the dataset. Distribution is the entropy in case if we we shuffle dataset.
 If the line crosses the distribution it means that there is no pattern in data.
-If it the line is far away from distribution - there is a pattern in data. 
+If the line is far away from distribution - there is a pattern in data. 
 """
 
 # ╔═╡ 1d8a997e-b806-4609-8b5a-e5464cc64a6b
@@ -213,7 +213,7 @@ entropy([
 # ╔═╡ d475f4d9-d114-4a31-b37a-b9a30fd5477f
 md"""
 question 
-1. Why is in a picture with pattern entropy is higher?
+1. Why the entropy is higher on a picture with pattern?
 """
 
 # ╔═╡ 133b54b2-6bd3-4751-9c8d-4ea5839efbf9
