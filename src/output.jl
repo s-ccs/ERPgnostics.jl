@@ -1,20 +1,5 @@
-begin
-	using Pkg
-	Pkg.activate("/home/mikheev/Desktop/ERPgnostics")
-	Pkg.status()
-end
+inlude("setup.jl")
 
-begin 
-	using PyMNE
-	using UnfoldMakie
-	using Unfold
-	using CSV, DataFrames
-	using Random, Format
-	using CairoMakie
-	using Statistics, StatsBase
-	using HDF5, FileIO
-	using Printf
-end
 function filt(img)
     filtered_data = UnfoldMakie.imfilter(img, UnfoldMakie.Kernel.gaussian((1, max(30, 0))))
 end
@@ -25,41 +10,60 @@ function range_mean(dat_filt)
 	return mean(b)
 end
 
-# single channel
+# data for single channel
 fid = h5open("data/single.hdf5", "r") 
 dat = read(fid["data"]["single.hdf5"])
 close(fid)
 
 evts = DataFrame(CSV.File("data/events.csv"))
 
-function sorter(dat)
+Images.entropy(dat)
+
+function sorter(dat, f)
 	e = zeros(0)
 	for n in names(evts)
 		dat_sorted = filt((dat[:, sortperm(evts[!, n])]))
-		e = append!(e, round.(range_mean(dat_sorted), digits = 2))
+		e = append!(e, round.(fun(dat_sorted), digits = 2))
 	end
 	return DataFrame("Sorting values" => names(evts), "Mean row range" => e)
 end
 
+sorter(dat, Images.entropy)
+sorter(dat, range_mean)
 
-out = sorter(dat)
+
+@time begin
+	out = sorter(dat, Images.entropy)
+end
+
+
 sort(out, "Mean row range")
 CSV.write("data/output.csv", sort(out, "Mean row range"))
 display(out)
 
-# multiple channels
+begin
+	f = Figure()
+	plot_erpimage!(
+			f[1, 1],
+			dat;
+			sortvalues = evts.duration,
+			axis = (; title = "One-sided fan; sorted by duration"),
+		)
+	f
+end
+# data for multiple channels
 
 fid = h5open("data/mult.hdf5", "r") 
 dat2 = read(fid["data"]["mult.hdf5"])
 close(fid)
 
-function mult_sorter(dat)
+function mult_sorter(dat, f)
 	row = Dict()
 	for n in names(evts)
 		col = zeros(0)
 		for i in 1:size(dat)[1]
 			dat_sorted = filt(dat[i, :, sortperm(evts[!, n])])
-			col = append!(col, round.(range_mean(dat_sorted), digits = 2))
+			col = append!(col, round.(f(dat_sorted), digits = 2))
 		end
 		println(n)
 		println(col)
@@ -67,6 +71,14 @@ function mult_sorter(dat)
 	end
 	return DataFrame(row)
 end
-out2 = mult_sorter(dat2)
+
+@time begin
+	out2 = mult_sorter(dat2, Images.entropy) #5392 seconds
+end
+
 
 CSV.write("data/output2.csv", out2)
+
+heatmap(Matrix(out2))
+
+plot_topoplotseries()

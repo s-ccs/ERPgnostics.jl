@@ -158,6 +158,16 @@ function simulate_alldata()
     #@info UnfoldSim.simulate_component(MersenneTwister(1),componentC,design)
 end
 
+# ╔═╡ 975cd239-bd7f-47f9-8478-42d9ce9dd5e7
+function UnfoldSim.simulate_component(rng, c::TimeVaryingComponent, design::AbstractDesign)
+
+    evts = generate_events(design)
+
+    data = c.beta .* c.basisfunction(evts, c.maxlength)
+    return truncate_basisfunction(data, c.maxlength)
+
+end
+
 # ╔═╡ 99343eb8-1a85-4481-9d82-fa5a9993e3ca
 let
     dat, evts = simulate_alldata()
@@ -202,15 +212,7 @@ let
     f
 end
 
-# ╔═╡ 975cd239-bd7f-47f9-8478-42d9ce9dd5e7
-function UnfoldSim.simulate_component(rng, c::TimeVaryingComponent, design::AbstractDesign)
 
-    evts = generate_events(design)
-
-    data = c.beta .* c.basisfunction(evts, c.maxlength)
-    return truncate_basisfunction(data, c.maxlength)
-
-end
 
 # ╔═╡ 054516fd-7eae-4d0b-a4f5-51a4ff168fcc
 let
