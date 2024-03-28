@@ -11,19 +11,19 @@ function range_mean(dat_filt)
 end
 
 # data for single channel
-fid = h5open("data/single.hdf5", "r") 
-dat = read(fid["data"]["single.hdf5"])
+fid = h5open("./data/single.hdf5", "r") 
+dat = read(fid["data"]["test.hdf5"])
 close(fid)
 
 evts = DataFrame(CSV.File("data/events.csv"))
 
 Images.entropy(dat)
 
-function sorter(dat, f)
+function sorter(dat, func)
 	e = zeros(0)
 	for n in names(evts)
 		dat_sorted = filt((dat[:, sortperm(evts[!, n])]))
-		e = append!(e, round.(fun(dat_sorted), digits = 2))
+		e = append!(e, round.(func(dat_sorted), digits = 2))
 	end
 	return DataFrame("Sorting values" => names(evts), "Mean row range" => e)
 end
@@ -42,11 +42,15 @@ CSV.write("data/output.csv", sort(out, "Mean row range"))
 display(out)
 
 begin
+	# find indices where events.column is not NaN
+	indices_notnan = findall(<(1), isnan.(evts.sac_amplitude))
+
+	# create figure
 	f = Figure()
 	plot_erpimage!(
 			f[1, 1],
-			dat;
-			sortvalues = evts.duration,
+			dat[:, indices_notnan];  # only rows of dat where evts.column is not NaN
+			sortvalues = evts[indices_notnan, :].sac_amplitude,
 			axis = (; title = "One-sided fan; sorted by duration"),
 		)
 	f
