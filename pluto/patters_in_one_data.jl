@@ -29,9 +29,9 @@ end
 # ╔═╡ 800822b9-4cf8-4c5d-a829-11798d8d581a
 md"""
 Here we want to plot the following patterns in ONE data set:
-1. Sigmoid (missing)
+1. Sigmoid 
 2. Vertical band (?)
-3. Horizontal band
+3. Horizontal band (missing)
 4. Abline band
 5. One-sided fan
 6. Two-sided fan
@@ -172,9 +172,9 @@ end
 let
     dat, evts = simulate_alldata()
     @info size(dat)
-    f = Figure(size = (800, 1200))
+    f = Figure(size = (500, 1200))
     plot_erpimage!(
-        f[end+1, 1],
+        f[1, 1],
         dat;
         sortvalues = evts.Δlatency,
         axis = (; title = "Sigmoid; sorted by Δlatency"),
@@ -210,6 +210,7 @@ let
         axis = (; title = "Abline; sorted by duration_linear"),
     )
     f
+    #save("assets/patterns.png", f)
 end
 
 

@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.37
+# v0.19.40
 
 using Markdown
 using InteractiveUtils
@@ -140,12 +140,15 @@ begin
     print(entropy(filt(dat_noerp)))
 end
 
+# ╔═╡ 218ba054-e84f-4f49-ac5c-9ebcb126c0a1
+dat_erp[:, shuffle(1:end)]
+
 # ╔═╡ f30890f8-c107-494c-96b4-6aab3e017e01
 # counting entropy of the data 
 begin
     ent_erp = zeros(100)
     for k = 1:100
-        ent_erp[k] = entropy(filt(dat_erp[:, shuffle(1:end)]))
+        ent_erp[k] = Images.entropy(filt(dat_erp[:, shuffle(1:end)]))
     end
     entropy(filt(dat_erp))
 end
@@ -154,7 +157,7 @@ end
 begin
     ent_noerp = zeros(100)
     for k = 1:100
-        ent_noerp[k] = entropy(filt(dat_noerp[:, shuffle(1:end)]))
+        ent_noerp[k] = Images.entropy(filt(dat_noerp[:, shuffle(1:end)]))
     end
     entropy(filt(dat_noerp))
 end
@@ -2728,6 +2731,7 @@ version = "3.5.0+0"
 # ╠═99ff321e-ffa6-4256-99d3-3a4095ac6da8
 # ╠═048b4ca6-852d-4c3d-a2e6-7f18f11ea538
 # ╠═69123d06-46aa-4110-8e9c-4ed38b5e240f
+# ╠═218ba054-e84f-4f49-ac5c-9ebcb126c0a1
 # ╠═f30890f8-c107-494c-96b4-6aab3e017e01
 # ╠═2d0d60c6-f999-4b46-b777-c640ebfc8d4b
 # ╠═018c378d-bd56-4ae7-b1d0-3d747ba2550b

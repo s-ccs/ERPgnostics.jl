@@ -1,6 +1,6 @@
 begin
 	using Pkg
-	Pkg.activate("/home/mikheev/Desktop/ERPgnostics")
+    Pkg.activate(".")
 	Pkg.status()
 end
 
@@ -15,4 +15,5 @@ begin
 	using HDF5, FileIO
 	using Printf
 	using Images
+    using TopoPlots 
 end
