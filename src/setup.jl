@@ -5,7 +5,7 @@ begin
 end
 
 begin 
-	using PyMNE
+	#using PyMNE
 	using UnfoldMakie
 	using Unfold
 	using CSV, DataFrames
