@@ -16,4 +16,7 @@ begin
 	using Printf
 	using Images
     using TopoPlots 
+	using ImageFiltering
+	using ComputationalResources
+	using Observables
 end
