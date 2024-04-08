@@ -5,7 +5,6 @@ begin
 end
 
 begin 
-	#using PyMNE
 	using UnfoldMakie
 	using Unfold
 	using CSV, DataFrames
@@ -30,7 +29,7 @@ evts = DataFrame(CSV.File("data/events.csv"))
 image = CSV.read("data/output3.csv", DataFrame)
 
 
-function x()
+function x(evts, image)
     var_i = Observable(3)
     chan_i = Observable(1)
     f = Figure()
@@ -38,55 +37,54 @@ function x()
     hm = heatmap!(ax, Matrix(image))
     Colorbar(f[1, 5], hm, labelrotation = -π / 2, label = "Entropy d")
 
-    evts[:, var_i[]]
-    indices_notnan = findall(<(1), isnan.(evts[:, var_i[]]))
-    plot_erpimage!(
-        f[2, 1:5],
-        erps[chan_i[], :, indices_notnan]; 
-        sortvalues = evts[indices_notnan, var_i[]],
-        axis = (; title = "ERP image"),
-    )
-    str = lift((var_i, chan_i) -> "$(var_i), $(chan_i)", var_i, chan_i)
-    text!(ax, 1, 1, text = str,  align = (:center, :center))
+    e = lift((chan_i, var_i) -> erps[chan_i, :, findall(<(1), isnan.(evts[:, var_i]))], chan_i, var_i)
+    s = lift((var_i) -> evts[findall(<(1), isnan.(evts[:, var_i])), var_i], var_i)
+
+    str = lift((var_i, chan_i) -> "$(var_i), $(chan_i)", chan_i, var_i)
+    text!(ax, 40, 10, text = str,  align = (:center, :center))
 
     on(events(f).mousebutton, priority = 2) do event
         if event.button == Mouse.left && event.action == Mouse.press
-            plt, p = pick(hm)
-            println(p)
-            i[] = p
+            _, i = pick(ax.scene)
+            chan_i[] = mod(i, size(m, 1))
+            var_i[] = Integer(floor(i / size(m, 1)))
+            println(chan_i[], ' ', var_i[])
+            notify(e)
+            notify(s)
+            plot_erpimage!(
+                f[2, 1:5],
+                e[]; 
+                sortvalues = s[],
+                axis = (; title = "ERP image"),
+            )
         end
     end
-
     f
 end
-x()
-
+x(evts[1:50, 2:end], image[1:50, 2:end])
+x(evts[:, 2:end], image[:, 2:end])
 
 
 function y()
-    var_i = Observable(3)
+    var_i = Observable(1)
     chan_i = Observable(1)
-    points = Observable(Point2f[])
+    m = Matrix(image[:, 1:6])
     f = Figure()
     ax = WGLMakie.Axis(f[1, 1:4], title = "Entropy d image", xlabel = "Channels", ylabel = "Index of event variable")
-    hm = heatmap!(ax, Matrix(image))
+    hm = heatmap!(ax, m)
     Colorbar(f[1, 5], hm, labelrotation = -π / 2, label = "Entropy d")
 
-    str = lift((points[][]) -> "$(points)", points)
-    #text!(ax, 100, 1, text = str,  align = (:center, :center))
+    str = lift((var_i, chan_i) -> "$(var_i), $(chan_i)", var_i, chan_i)
+    text!(ax, 100, 1, text = str,  align = (:center, :center))
 
     on(events(f).mousebutton, priority = 2) do event
         if event.button == Mouse.left && event.action == Mouse.press
-            mp = events(f).mouseposition[]
-            points[] = Point2f[]
-            push!(points[], mp)
-            notify(points)
-            #Makie.project(f.scene, :pixel, :data, ax.scene.events.mouseposition[]) 
-            println(points)
-            #var_i[] = Int64(mp[1])
+            _, i = pick(ax.scene)
+            chan_i[] = mod(i, size(m, 1))
+            var_i[] = Integer(floor(i / size(m, 1)))
+            println(chan_i[], ' ', var_i[])
         end
     end
-
     f
 end
 y()
