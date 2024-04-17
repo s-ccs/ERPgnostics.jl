@@ -30,18 +30,21 @@ image = CSV.read("data/output3.csv", DataFrame)
 
 
 function x(evts, image)
+    m = Matrix(image)
     var_i = Observable(3)
     chan_i = Observable(1)
     f = Figure()
     ax = WGLMakie.Axis(f[1, 1:4], title = "Entropy d image", xlabel = "Channels", ylabel = "Index of event variable")
-    hm = heatmap!(ax, Matrix(image))
+    hm = heatmap!(ax, m)
     Colorbar(f[1, 5], hm, labelrotation = -π / 2, label = "Entropy d")
 
     e = lift((chan_i, var_i) -> erps[chan_i, :, findall(<(1), isnan.(evts[:, var_i]))], chan_i, var_i)
     s = lift((var_i) -> evts[findall(<(1), isnan.(evts[:, var_i])), var_i], var_i)
 
-    str = lift((var_i, chan_i) -> "$(var_i), $(chan_i)", chan_i, var_i)
-    text!(ax, 40, 10, text = str,  align = (:center, :center))
+    str = lift((var_i, chan_i) -> "Entropy d image, indexes: $(var_i), $(chan_i)", var_i, chan_i)
+    on(str) do string
+        ax.title = string
+    end
 
     on(events(f).mousebutton, priority = 2) do event
         if event.button == Mouse.left && event.action == Mouse.press
@@ -65,6 +68,40 @@ x(evts[1:50, 2:end], image[1:50, 2:end])
 x(evts[:, 2:end], image[:, 2:end])
 
 
+
+function x1(evts, image)
+    m = Matrix(image)
+    var_i = Observable(3)
+    chan_i = Observable(1)
+    f = Figure()
+    ax = WGLMakie.Axis(f[1, 1:4], title = "Entropy d image", xlabel = "Channels", ylabel = "Index of event variable")
+    hm = heatmap!(ax, m)
+    Colorbar(f[1, 5], hm, labelrotation = -π / 2, label = "Entropy d")
+    
+    indices_notnan = @lift(findall(<(1), isnan.(evts[:, $var_i[]])))
+    data_view = @lift(@view(erps[$chan_i, :, $indices_notnan]))
+    str = @lift("ERP image: channel " * string($chan_i) * ", variable" * string($var_i))
+    plot_erpimage!(
+        f[2, 1:5],
+        data_view;
+        sortvalues = @lift(evts[$indices_notnan, $var_i[]]),
+        axis = (; title = str),
+    )
+    println(size(m))
+    on(events(f).mousebutton, priority = 2) do event
+        if event.button == Mouse.left && event.action == Mouse.press
+            _, i = pick(hm)
+            chan_i[] = mod(i[], size(m, 1))
+            var_i[] = Integer(floor(i[] / size(m, 1)))
+            println(i[], ' ', chan_i[], ' ', var_i[])
+        end
+    end
+    f
+end
+x1(evts[1:50, 2:end], image[1:50, 2:end])
+
+x1(evts[:, 2:end], image[:, 2:end])
+
 function y()
     var_i = Observable(1)
     chan_i = Observable(1)
@@ -74,9 +111,10 @@ function y()
     hm = heatmap!(ax, m)
     Colorbar(f[1, 5], hm, labelrotation = -π / 2, label = "Entropy d")
 
-    str = lift((var_i, chan_i) -> "$(var_i), $(chan_i)", var_i, chan_i)
-    text!(ax, 100, 1, text = str,  align = (:center, :center))
-
+    str = lift((var_i, chan_i) -> "Entropy d image, indexes: $(var_i), $(chan_i)", var_i, chan_i)
+    on(str) do string
+        ax.title = string
+    end
     on(events(f).mousebutton, priority = 2) do event
         if event.button == Mouse.left && event.action == Mouse.press
             _, i = pick(ax.scene)
@@ -88,6 +126,9 @@ function y()
     f
 end
 y()
+
+# to do
+# 1. disable dragging
 ###############
 
 
