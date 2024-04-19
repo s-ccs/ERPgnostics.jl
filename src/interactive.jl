@@ -41,16 +41,17 @@ function x(evts_d, all_images)
     
     indices_notnan = @lift(findall(<(1), isnan.(evts_d[:, $var_i[]])))
     chosen_image = @lift(@view(all_images[$chan_i, :, $indices_notnan]))
-    sorter = @lift(evts_d[$indices_notnan, $var_i[]])
+    sortval = @lift(evts_d[$indices_notnan, $var_i[]])
     str = @lift("ERP image: channel " * string($chan_i) * ", variable " * string(sort_names[$var_i]))
     plot_erpimage!(
         f[2, 1:5],
         chosen_image;
-        sortvalues = sorter,
-        show_sortval = false, 
-        axis = (; title = str, xticks = 1:100:size(chosen_image[], 1)),
+        sortvalues = sortval,
+        show_sortval = true, 
+        axis = (; #title = str, 
+        xticks = 1:100:size(to_value(chosen_image), 1)),
     )
-    println(size(sorter[]))
+    println(size(sortval[]))
 
     on(events(f).mousebutton, priority = 1) do event
         if event.button == Mouse.left && event.action == Mouse.press
