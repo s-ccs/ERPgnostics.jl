@@ -26,67 +26,32 @@ erps = read(fid["data"]["mult.hdf5"])
 close(fid)
 evts = DataFrame(CSV.File("data/events.csv"))
 
-image = CSV.read("data/output3.csv", DataFrame)
+images = CSV.read("data/output3.csv", DataFrame)
 
 
-function x(evts, image)
-    m = Matrix(image)
-    var_i = Observable(3)
+function x(evts_d, all_images)
+    m = Matrix(evts_d)
+    var_i = Observable(1)
     chan_i = Observable(1)
-    f = Figure()
-    ax = WGLMakie.Axis(f[1, 1:4], title = "Entropy d image", xlabel = "Channels", ylabel = "Index of event variable")
-    hm = heatmap!(ax, m)
-    Colorbar(f[1, 5], hm, labelrotation = -π / 2, label = "Entropy d")
-
-    e = lift((chan_i, var_i) -> erps[chan_i, :, findall(<(1), isnan.(evts[:, var_i]))], chan_i, var_i)
-    s = lift((var_i) -> evts[findall(<(1), isnan.(evts[:, var_i])), var_i], var_i)
-
-    str = lift((var_i, chan_i) -> "Entropy d image, indexes: $(var_i), $(chan_i)", var_i, chan_i)
-    on(str) do string
-        ax.title = string
-    end
-
-    on(events(f).mousebutton, priority = 2) do event
-        if event.button == Mouse.left && event.action == Mouse.press
-            _, i = pick(ax.scene)
-            chan_i[] = mod(i, size(m, 1))
-            var_i[] = Integer(floor(i / size(m, 1)))
-            println(chan_i[], ' ', var_i[])
-            notify(e)
-            notify(s)
-            plot_erpimage!(
-                f[2, 1:5],
-                e[]; 
-                sortvalues = s[],
-                axis = (; title = "ERP image"),
-            )
-        end
-    end
-    f
-end
-x(evts[1:50, 2:end], image[1:50, 2:end])
-x(evts[:, 2:end], image[:, 2:end])
-
-
-
-function x1(evts, image)
-    m = Matrix(image)
-    var_i = Observable(3)
-    chan_i = Observable(1)
+    sort_names = names(evts_d)
     f = Figure()
     ax = WGLMakie.Axis(f[1, 1:4], title = "Entropy d image", xlabel = "Channels", ylabel = "Index of event variable")
     hm = heatmap!(ax, m)
     Colorbar(f[1, 5], hm, labelrotation = -π / 2, label = "Entropy d")
     
-    indices_notnan = @lift(findall(<(1), isnan.(evts[:, $var_i[]])))
-    data_view = @lift(@view(erps[$chan_i, :, $indices_notnan]))
-    str = @lift("ERP image: channel " * string($chan_i) * ", variable " * string($var_i))
+    indices_notnan = @lift(findall(<(1), isnan.(evts_d[:, $var_i[]])))
+    chosen_image = @lift(@view(all_images[$chan_i, :, $indices_notnan]))
+    sorter = @lift(evts_d[$indices_notnan, $var_i[]])
+    str = @lift("ERP image: channel " * string($chan_i) * ", variable " * string(sort_names[$var_i]))
     plot_erpimage!(
         f[2, 1:5],
-        data_view;
-        sortvalues = @lift(evts[$indices_notnan, $var_i[]]),
-        axis = (; title = str),
+        chosen_image;
+        sortvalues = sorter,
+        show_sortval = false, 
+        axis = (; title = str, xticks = 1:100:size(chosen_image[], 1)),
     )
+    println(size(sorter[]))
+
     on(events(f).mousebutton, priority = 1) do event
         if event.button == Mouse.left && event.action == Mouse.press
             plot, _ = pick(ax.scene)
@@ -94,21 +59,23 @@ function x1(evts, image)
             pos = Makie.position_on_plot(plot, -1, apply_transform = false)[Vec(1, 2)]
             b = Makie._pixelated_getindex(plot[1][], plot[2][], plot[3][], pos, true)
             chan_i[], var_i[] = b[1], b[2]
-            #println(chan_i[], ' ', var_i[])
         end
     end
     f
 end
-x1(evts[1:5, 2:end], image[1:5, 2:end])
 
-x1(evts[1:50, 2:end], image[1:50, 2:end])
+x(images, erps)
 
-x1(evts[:, 2:end], image[:, 2:end])
+x(images[:, 2:end], erps[:, 2:end])
 
-function y(image)
+size(erps)
+names(images)
+
+
+function y(images)
     var_i = Observable(1)
     chan_i = Observable(1)
-    m = Matrix(image)
+    m = Matrix(images)
     f = Figure(size = (600, 600))
     str = @lift("Entropy d image, indexes: " * string($chan_i) * ", " * string($var_i))
  
@@ -134,7 +101,7 @@ function y(image)
     end
     f
 end
-y(image[1:10, 2:10])
+y(images[1:10, 2:10])
 
 
 
