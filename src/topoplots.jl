@@ -14,7 +14,7 @@ tmp.label = 1:nrow(tmp)
 rename!(tmp, :variable => :condition, :value => :estimate)
 filter!(x -> x.condition == "type" || x.condition == "duration", tmp)
 
-tmp1 = filter(x -> x.condition == "type" , tmp)
+tmp1 = filter(x -> x.condition == "type", tmp)
 plot_topoplotseries(
     tmp,
     Δbin;
@@ -32,8 +32,4 @@ plot_topoplot(tmp1; positions = positions2)
 data, positions = TopoPlots.example_data()
 df = UnfoldMakie.eeg_matrix_to_dataframe(data[:, :, 1], string.(1:64))
 df
-plot_topoplotseries(
-    df,
-    80;
-    positions = positions,
-)
+plot_topoplotseries(df, 80; positions = positions)

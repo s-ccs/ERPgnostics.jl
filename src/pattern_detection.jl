@@ -38,9 +38,9 @@ function mult_chan_pattern_detector_probability(dat, stat_function; n_permutatio
     kernel = (ImageFiltering.ReshapedOneD{2,1}(KernelFactors.gaussian(5)),)
     dat_filtered = similar(dat, size(dat, 3), size(dat, 2)) # transposition to have trials in first dimension already here
     dat_padded = permutedims(dat, (1, 3, 2))
-    d_perm = similar(dat, size(dat, 1), n_permutations) 
+    d_perm = similar(dat, size(dat, 1), n_permutations)
     @debug "starting permutation loop"
-	# We permute data for all events in advance
+    # We permute data for all events in advance
     for ch = 1:size(dat, 1)
         for perm = 1:n_permutations
 

@@ -74,3 +74,16 @@ begin
     save("assets/heatmap.png", f)
 end
 f
+
+
+
+# formatting
+using JuliaFormatter
+format_file("pluto/patters_in_one_data.jl")
+format_file("pluto/patterns_separated.jl")
+format_file("pluto/validation_data.jl")
+format_file("pluto/pattern_detection.jl")
+format_file("src/get_data.jl")
+format_file("src/interactive.jl")
+format_file("src/pattern_detection.jl")
+format_file("src/topoplots.jl")
