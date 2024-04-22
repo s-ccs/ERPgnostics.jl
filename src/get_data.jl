@@ -1,6 +1,7 @@
 inlude("setup.jl")
 
 begin
+	using PyMNE
 	subject = 8
 	dir_path = "/store/data/WLFO/derivatives/preproc_agert"
 	file_stub = dir_path * "/sub-{1:02d}/eeg/sub-{1:02d}_task-WLFO_{2:s}"
@@ -11,6 +12,9 @@ begin
 	srate = pyconvert(Float64, raw.info["sfreq"])
 end
 
+using JLD2
+positions_128 = to_positions(raw)
+JLD2.save_object("data/positions_128.jld2", positions_128)
 
 begin 
     events.latency .= events.onset .* srate;
