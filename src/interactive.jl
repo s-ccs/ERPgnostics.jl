@@ -20,16 +20,27 @@ begin
     using Observables
 end
 
+using GLMakie
+GLMakie.activate!(inline=false)
 
-fid = h5open("data/mult.hdf5", "r")
-erps = read(fid["data"]["mult.hdf5"])
-close(fid)
+begin
+    evts_init = CSV.read("data/events_init.csv", DataFrame)
+
+    fid = h5open("data/mult.hdf5", "r")
+    erps_init = read(fid["data"]["mult.hdf5"])
+    close(fid)
+
+    ix = evts_init.type .== "fixation"
+    erps = erps_init[:, :, ix]
+end
 evts = DataFrame(CSV.File("data/events.csv"))
+evts_d = CSV.read("data/evts_d.csv", DataFrame) # former output3
 
-images = CSV.read("data/output3.csv", DataFrame)
+# erps (128 channels, 769 mseconds, 2508 trials) - voltage
+# evts (2508 trials, 21 sorting variables) - parameters which can influence voltage
+# evts_d (128 channels, 21 sorting variables) - d/entropy image
 
-
-function x(evts_d, all_images)
+function x(evts_d, evts, erps)
     m = Matrix(evts_d)
     var_i = Observable(1)
     chan_i = Observable(1)
@@ -44,44 +55,55 @@ function x(evts_d, all_images)
     hm = heatmap!(ax, m)
     Colorbar(f[1, 5], hm, labelrotation = -π / 2, label = "Entropy d")
 
-    indices_notnan = @lift(findall(<(1), isnan.(evts_d[:, $var_i[]])))
-    chosen_image = @lift(@view(all_images[$chan_i, :, $indices_notnan]))
-    sortval = @lift(evts_d[$indices_notnan, $var_i[]])
+    #single_channel_erpimage = Observable(erps[1,:,:])
+    #sortval = Observable(collect(1. :size(evts,1)))
+
+   #=  map(chan_i,var_i) do ch,va
+        single_channel_erpimage.val = erps[ch, :, :]    
+        sortval[] = ((evts[:,va]))
+
+    end =#
+    single_channel_erpimage = @lift(erps[$chan_i, :, :])
+    sortval = @lift(evts[:, $var_i])
+
     str = @lift(
         "ERP image: channel " *
         string($chan_i) *
         ", variable " *
         string(sort_names[$var_i])
     )
+    
     str2 = @lift(string(sort_names[$var_i]))
     plot_erpimage!(
         f[2, 1:5],
-        chosen_image;
+        single_channel_erpimage;
         sortvalues = sortval,
         show_sortval = true,
         sortval_xlabel = str2,
-        axis = (; title = str, xticks = 1:100:size(to_value(chosen_image), 1)),
+        axis = (; title = str) 
+       # xticks = (1:100:size(to_value(single_channel_erpimage), 1)),
+        #yticks = (1:100:size(to_value(chosen_image), 2))),
     )
-    println(size(sortval[]))
+    #println(size(to_value(single_channel_erpimage)))
 
     on(events(f).mousebutton, priority = 1) do event
         if event.button == Mouse.left && event.action == Mouse.press
             plot, _ = pick(ax.scene)
-            a = DataInspector(plot)
             pos = Makie.position_on_plot(plot, -1, apply_transform = false)[Vec(1, 2)]
+            #@debug pos plot
             b = Makie._pixelated_getindex(plot[1][], plot[2][], plot[3][], pos, true)
+            #@debug b
             chan_i[], var_i[] = b[1], b[2]
+            #a = DataInspector(plot)
         end
     end
     f
 end
 
-x(images, erps)
+x(evts_d, evts, erps) # type varibale is excluded
 
-x(images[:, 2:end], erps[:, 2:end])
+using UnfoldMakie
 
-size(erps)
-names(images)
 
 
 function y(images)
@@ -116,7 +138,7 @@ function y(images)
     end
     f
 end
-y(images[1:10, 2:10])
+y(evts_d[1:10, 2:10])
 
 
 

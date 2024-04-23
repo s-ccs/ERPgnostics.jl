@@ -11,14 +11,12 @@ dat = read(fid["data"]["single.hdf5"])
 close(fid)
 
 begin # to visualise a single channel data
-    # find indices where events.column is not NaN
-    indices_notnan = findall(<(1), isnan.(evts.sac_amplitude))
     # create figure
     f = Figure()
     plot_erpimage!(
         f[1, 1],
-        dat[:, indices_notnan];  # only rows of dat where evts.column is not NaN
-        sortvalues = evts[indices_notnan, :].sac_amplitude,
+        dat;  # only rows of dat where evts.column is not NaN
+        sortvalues = evts.sac_amplitude,
         axis = (; title = "One-sided fan; sorted by duration"),
     )
     f
@@ -35,7 +33,7 @@ close(fid)
 # PATTERN DECTECTION 1
 # for single channel data
 @time begin
-    out1 = single_chan_pattern_detector(dat, Images.entropy)
+    out1 = single_chan_pattern_detector(dat, Images.entropy, evts)
 end
 
 sort(out1, "Mean row range")
@@ -45,7 +43,7 @@ display(out1)
 
 # PATTERN DECTECTION 2
 @time begin
-    out2 = mult_chan_pattern_detector_value(dat2, Images.entropy) #5392 seconds = 89 minutes
+    out2 = mult_chan_pattern_detector_value(dat2, Images.entropy, evts) #5392 seconds = 89 minutes
 end
 
 CSV.write("data/output2.csv", out2)
@@ -61,20 +59,23 @@ begin
 end
 
 # PATTERN DECTECTION 3
+evts_init = CSV.read("data/events_init.csv", DataFrame)
 @time begin
-    out3 = mult_chan_pattern_detector_probability(dat2, Images.entropy) 
+    ix = evts_init.type .== "fixation"
+    evts_d = mult_chan_pattern_detector_probability(dat2[:, :, ix], Images.entropy, evts) 
 end
 
 begin
     f = Figure()
     ax = CairoMakie.Axis(f[1, 1], xlabel = "Channels", ylabel = "Sorting event variables")
-    hm = heatmap!(ax, Matrix(out3))
+    hm = heatmap!(ax, Matrix(evts_d))
     Colorbar(f[1, 2], hm, labelrotation = -π / 2, label = "Probability of entropy different from entropy with no pattern")
     f
     save("assets/heatmap.png", f)
 end
 f
 
+CSV.write("data/evts_d.csv", evts_d)
 
 
 # formatting

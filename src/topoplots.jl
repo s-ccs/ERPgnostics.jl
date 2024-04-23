@@ -2,13 +2,13 @@ include("setup.jl")
 using PyMNE
 
 # data
-out3 = CSV.read("data/output2.csv", DataFrame)
+evts_d = CSV.read("data/evts_d.csv", DataFrame)
 positions_128 = JLD2.load_object("data/positions_128.jld2")
 
 Δbin = 140
 
 
-tmp = stack(out3, 1:21)
+tmp = stack(evts_d, 1:21)
 tmp.time = 1:nrow(tmp)
 tmp.label = 1:nrow(tmp)
 rename!(tmp, :variable => :condition, :value => :estimate)
@@ -22,11 +22,6 @@ plot_topoplotseries(
     combinefun = x -> x,
     mapping = (; :col => :condition),
 )
-
-
-raw = PyMNE.io.read_raw_fif(out3)
-positions2 = to_positions(Matrix(out3)')
-plot_topoplot(tmp1; positions = positions2)
 
 ###########
 data, positions = TopoPlots.example_data()

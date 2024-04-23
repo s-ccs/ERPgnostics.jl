@@ -1,5 +1,6 @@
 function slow_filter(img)
     filtered_data = UnfoldMakie.imfilter(img, UnfoldMakie.Kernel.gaussian((1, max(30, 0))))
+    return filtered_data
 end
 
 function fast_filter!(dat_filtered, dat, kernel) #
@@ -8,7 +9,7 @@ function fast_filter!(dat_filtered, dat, kernel) #
     return dat_filtered
 end
 
-function single_chan_pattern_detector(dat, func)
+function single_chan_pattern_detector(dat, func, evts)
     e = zeros(0)
     for n in names(evts)
         dat_sorted = slow_filter((dat[:, sortperm(evts[!, n])]))
@@ -17,7 +18,7 @@ function single_chan_pattern_detector(dat, func)
     return DataFrame("Sorting values" => names(evts), "Mean row range" => e)
 end
 
-function mult_chan_pattern_detector_value(dat, f)
+function mult_chan_pattern_detector_value(dat, f, evts)
     row = Dict()
     for n in names(evts) # iterate over event variables
         col = zeros(0)
@@ -32,7 +33,7 @@ function mult_chan_pattern_detector_value(dat, f)
     return DataFrame(row)
 end
 
-function mult_chan_pattern_detector_probability(dat, stat_function; n_permutations = 10)
+function mult_chan_pattern_detector_probability(dat, stat_function, evts; n_permutations = 10)
     row = Dict()
     @debug "starting"
     kernel = (ImageFiltering.ReshapedOneD{2,1}(KernelFactors.gaussian(5)),)
@@ -57,7 +58,7 @@ function mult_chan_pattern_detector_probability(dat, stat_function; n_permutatio
         sortix = sortperm(evts[!, n])
         col = fill(NaN, size(dat, 1))
         for ch = 1:size(dat, 1)
-            my_filter!(dat_filtered, @view(dat_padded[ch, sortix, :]), kernel)
+            fast_filter!(dat_filtered, @view(dat_padded[ch, sortix, :]), kernel)
             d_emp = stat_function(dat_filtered)
 
             col[ch] = abs(d_emp - mean_d_perm[ch])

@@ -19,4 +19,5 @@ begin
 	using ImageFiltering
 	using ComputationalResources
 	using Observables
+	using DSP
 end

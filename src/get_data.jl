@@ -19,7 +19,7 @@ JLD2.save_object("data/positions_128.jld2", positions_128)
 begin
     events.latency .= events.onset .* srate
     data_epoch_raw, times = Unfold.epoch(pyconvert(Array, data), events, (-0.5, 1), srate)
-    events_epoch, data_epoch0 = Unfold.dropMissingEpochs(events, data_epoch_raw)
+    events_epoch, data_epoch0 = Unfold.drop_missing_epochs(events, data_epoch_raw)
     #data_epoch = data_epoch0 .- mean(data_epoch0, dims=2) #normalisation
 end
 typeof(data_epoch0[32, :, :])
@@ -37,4 +37,8 @@ h5open("data/mult.hdf5", "w") do file
     close(file)
 end
 
-CSV.write("data/events.csv", events_epoch)
+CSV.write("data/events_init.csv", events_epoch)
+ix = evts_init.type .== "fixation"
+evts = evts_init[ix, 2:end]
+CSV.write("data/events.csv", evts)
+
