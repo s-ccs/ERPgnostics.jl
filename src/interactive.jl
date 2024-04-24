@@ -106,10 +106,10 @@ using UnfoldMakie
 
 
 
-function y(images)
+function y(evts_d)
     var_i = Observable(1)
     chan_i = Observable(1)
-    m = Matrix(images)
+    m = Matrix(evts_d)
     f = Figure(size = (600, 600))
     str = @lift("Entropy d image, indexes: " * string($chan_i) * ", " * string($var_i))
 
@@ -138,7 +138,7 @@ function y(images)
     end
     f
 end
-y(evts_d[1:10, 2:10])
+y(evts_d)
 
 
 

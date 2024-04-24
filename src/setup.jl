@@ -20,4 +20,5 @@ begin
 	using ComputationalResources
 	using Observables
 	using DSP
+	using JLD2
 end
