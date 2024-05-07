@@ -51,6 +51,12 @@ function x(evts_d, evts, erps)
         title = "Entropy d image",
         xlabel = "Channels",
         ylabel = "Index of event variable",
+        xpanlock = true,
+        ypanlock = true,
+        xzoomlock = true,
+        yzoomlock = true,
+        xrectzoom = false,
+        yrectzoom = false,
     )
     hm = heatmap!(ax, m)
     Colorbar(f[1, 5], hm, labelrotation = -π / 2, label = "Entropy d")
@@ -80,7 +86,12 @@ function x(evts_d, evts, erps)
         sortvalues = sortval,
         show_sortval = true,
         sortval_xlabel = str2,
-        axis = (; title = str) 
+        axis = (; title = str, xpanlock = true,
+        ypanlock = true,
+        xzoomlock = true,
+        yzoomlock = true,
+        xrectzoom = false,
+        yrectzoom = false,),
        # xticks = (1:100:size(to_value(single_channel_erpimage), 1)),
         #yticks = (1:100:size(to_value(chosen_image), 2))),
     )
