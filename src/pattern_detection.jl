@@ -3,8 +3,8 @@ function slow_filter(img)
     return filtered_data
 end
 
-function fast_filter!(dat_filtered, dat, kernel) #
-    r = Images.ImageFiltering.ComputationalResources.CPU1(Images.ImageFiltering.FIR())
+function fast_filter!(dat_filtered, kernel, dat) #
+    #r = Images.ImageFiltering.ComputationalResources.CPU1(Images.ImageFiltering.FIR())
     DSP.filt!(dat_filtered, kernel[1].data.parent, dat)
     return dat_filtered
 end
@@ -47,7 +47,7 @@ function mult_chan_pattern_detector_probability(dat, stat_function, evts; n_perm
 
             sortix = shuffle(1:size(dat_filtered, 1))
             d_perm[ch, perm] = stat_function(
-                fast_filter!(dat_filtered, @view(dat_padded[ch, sortix, :]), kernel),
+                fast_filter!(dat_filtered, kernel, @view(dat_padded[ch, sortix, :])),
             )
             @show ch, perm
         end
@@ -58,7 +58,7 @@ function mult_chan_pattern_detector_probability(dat, stat_function, evts; n_perm
         sortix = sortperm(evts[!, n])
         col = fill(NaN, size(dat, 1))
         for ch = 1:size(dat, 1)
-            fast_filter!(dat_filtered, @view(dat_padded[ch, sortix, :]), kernel)
+            fast_filter!(dat_filtered, kernel, @view(dat_padded[ch, sortix, :]))
             d_emp = stat_function(dat_filtered)
 
             col[ch] = abs(d_emp - mean_d_perm[ch])
