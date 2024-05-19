@@ -36,7 +36,7 @@ close(fid)
 # Data for multiple channels (only fixations)
 # 128 channels x 769 time x 2508 events 
 
-fid = h5open("data_fixations/data_fixations.hdf5", "r")
+fid = h5open("data/data_fixations.hdf5", "r")
 dat_fix = read(fid["data"]["data_fixations.hdf5"])
 close(fid)
 
@@ -77,6 +77,7 @@ evts_init = CSV.read("data/events_init.csv", DataFrame)
 end
 
 # PATTERN DETECTION 4 (FOR FIXATIONS ONLY)
+# 10 cores: 50 s
 @time begin
     evts_d = mult_chan_pattern_detector_probability(dat_fix, Images.entropy, evts) 
 end
