@@ -59,8 +59,9 @@ function mult_chan_pattern_detector_probability(dat, stat_function, evts; n_perm
         sortix = sortperm(evts[!, n])
         col = fill(NaN, size(dat, 1))
         for ch = 1:size(dat, 1)
-            fast_filter(kernel, @view(dat_padded[ch, sortix, :]))
-            d_emp = stat_function(dat_filtered)
+            d_emp = stat_function(
+                fast_filter(kernel, @view(dat_padded[ch, sortix, :]))
+            )
 
             col[ch] = abs(d_emp - mean_d_perm[ch])
             print(ch, " ")
