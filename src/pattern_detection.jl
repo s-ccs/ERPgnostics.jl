@@ -3,10 +3,11 @@ function slow_filter(img)
     return filtered_data
 end
 
-function fast_filter!(dat_filtered, kernel, dat) #
+
+function fast_filter(kernel, dat) #
     #r = Images.ImageFiltering.ComputationalResources.CPU1(Images.ImageFiltering.FIR())
-    DSP.filt!(dat_filtered, kernel[1].data.parent, dat)
-    return dat_filtered
+    filter_result = DSP.filt(kernel[1].data.parent, dat)
+    return filter_result
 end
 
 function single_chan_pattern_detector(dat, func, evts)
@@ -42,26 +43,26 @@ function mult_chan_pattern_detector_probability(dat, stat_function, evts; n_perm
     d_perm = similar(dat, size(dat, 1), n_permutations)
     @debug "starting permutation loop"
     # We permute data for all events in advance
-    for ch = 1:size(dat, 1)
-        for perm = 1:n_permutations
-
+    
+    Threads.@threads for perm = 1:n_permutations
+        for ch = 1:size(dat, 1)
             sortix = shuffle(1:size(dat_filtered, 1))
             d_perm[ch, perm] = stat_function(
-                fast_filter!(dat_filtered, kernel, @view(dat_padded[ch, sortix, :])),
+                fast_filter(kernel, @view(dat_padded[ch, sortix, :])),
             )
             @show ch, perm
         end
     end
     mean_d_perm = mean(d_perm, dims = 2)[:, 1]
 
-    for n in names(evts)
+    Threads.@threads for n in names(evts)
         sortix = sortperm(evts[!, n])
         col = fill(NaN, size(dat, 1))
         for ch = 1:size(dat, 1)
-            fast_filter!(dat_filtered, kernel, @view(dat_padded[ch, sortix, :]))
-            d_emp = stat_function(dat_filtered)
+            col[ch] = abs(stat_function(
+                fast_filter(kernel, @view(dat_padded[ch, sortix, :]))
+            ) - mean_d_perm[ch])
 
-            col[ch] = abs(d_emp - mean_d_perm[ch])
             print(ch, " ")
         end
         println(n)

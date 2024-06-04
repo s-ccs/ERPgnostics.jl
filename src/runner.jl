@@ -1,3 +1,7 @@
+# FOR MULTITHREADING: 
+# run: >julia -t [n_threads]
+# instead of [n_threads] write a desired number of threads (<= amount of CPU cores)
+
 include("setup.jl")
 include("pattern_detection.jl")
 
@@ -27,6 +31,13 @@ end
 
 fid = h5open("data/mult.hdf5", "r")
 dat2 = read(fid["data"]["mult.hdf5"])
+close(fid)
+
+# Data for multiple channels (only fixations)
+# 128 channels x 769 time x 2508 events 
+
+fid = h5open("data/data_fixations.hdf5", "r")
+dat_fix = read(fid["data"]["data_fixations.hdf5"])
 close(fid)
 
 
@@ -63,6 +74,12 @@ evts_init = CSV.read("data/events_init.csv", DataFrame)
 @time begin
     ix = evts_init.type .== "fixation"
     evts_d = mult_chan_pattern_detector_probability(dat2[:, :, ix], Images.entropy, evts) 
+end
+
+# PATTERN DETECTION 4 (FOR FIXATIONS ONLY)
+# 10 cores: 50 s
+@time begin
+    evts_d = mult_chan_pattern_detector_probability(dat_fix, Images.entropy, evts) 
 end
 
 begin
