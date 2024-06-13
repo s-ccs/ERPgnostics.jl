@@ -29,6 +29,13 @@ fid = h5open("data/mult.hdf5", "r")
 dat2 = read(fid["data"]["mult.hdf5"])
 close(fid)
 
+#= @time begin
+    ix = evts_init.type .== "fixation"
+    h5open("data/data_fixations.hdf5", "w") do file
+        write(file, "data/data_fixations.hdf5", dat2[:, :, ix]) 
+        close(file)
+    end
+end =#
 
 # PATTERN DECTECTION 1
 # for single channel data
@@ -65,6 +72,16 @@ evts_init = CSV.read("data/events_init.csv", DataFrame)
     evts_d = mult_chan_pattern_detector_probability(dat2[:, :, ix], Images.entropy, evts) 
 end
 
+
+
+fid = h5open("data/data_fixations.hdf5", "r")
+dat_f = read(fid["data"]["data_fixations.hdf5"])
+close(fid)
+
+@time begin
+    evts_d = mult_chan_pattern_detector_probability(dat_f, Images.entropy, evts) #249 sec, with threads - 30 sec
+end
+
 begin
     f = Figure()
     ax = CairoMakie.Axis(f[1, 1], xlabel = "Channels", ylabel = "Sorting event variables")
@@ -75,7 +92,11 @@ begin
 end
 f
 
-CSV.write("data/evts_d.csv", evts_d)
+
+
+@time begin
+    evts_d = mult_chan_test(dat_f, Images.entropy, evts) 
+end
 
 
 # formatting

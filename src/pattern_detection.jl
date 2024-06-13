@@ -37,15 +37,18 @@ function mult_chan_pattern_detector_probability(dat, stat_function, evts; n_perm
     row = Dict()
     @debug "starting"
     kernel = (ImageFiltering.ReshapedOneD{2,1}(KernelFactors.gaussian(5)),)
+    #println("kernel: ", kernel)
     dat_filtered = similar(dat, size(dat, 3), size(dat, 2)) # transposition to have trials in first dimension already here
     dat_padded = permutedims(dat, (1, 3, 2))
+    #println("dat_padded: ", size(dat_padded))
     d_perm = similar(dat, size(dat, 1), n_permutations)
     @debug "starting permutation loop"
     # We permute data for all events in advance
-    for ch = 1:size(dat, 1)
+    Threads.@threads for ch = 1:size(dat, 1)
         for perm = 1:n_permutations
 
-            sortix = shuffle(1:size(dat_filtered, 1))
+            sortix = shuffle(1:size(dat_filtered, 1)) # a vector of indecies
+            #println("dat_padded[ch, sortix, :]: ", size(dat_padded[ch, sortix, :]))
             d_perm[ch, perm] = stat_function(
                 fast_filter!(dat_filtered, kernel, @view(dat_padded[ch, sortix, :])),
             )
@@ -54,7 +57,7 @@ function mult_chan_pattern_detector_probability(dat, stat_function, evts; n_perm
     end
     mean_d_perm = mean(d_perm, dims = 2)[:, 1]
 
-    for n in names(evts)
+    Threads.@threads for n in names(evts)
         sortix = sortperm(evts[!, n])
         col = fill(NaN, size(dat, 1))
         for ch = 1:size(dat, 1)
@@ -74,4 +77,27 @@ function range_mean(dat_filt)
     a = extrema(dat_filt, dims = 2)
     b = last.(a) .- first.(a)
     return mean(b)
+end
+
+function mult_chan_test(dat, stat_function, n_permutations = 10)
+    row = Dict()
+    @debug "starting"
+    kernel = (ImageFiltering.ReshapedOneD{2,1}(KernelFactors.gaussian(5)),)
+    #println("kernel: ", kernel)
+    dat_filtered = similar(dat, size(dat, 3), size(dat, 2)) # transposition to have trials in first dimension already here
+    dat_padded = permutedims(dat, (1, 3, 2))
+    #println("dat_padded: ", size(dat_padded))
+    d_perm = similar(dat, size(dat, 1), n_permutations)
+    @debug "starting permutation loop"
+    # We permute data for all events in advance
+    
+    Threads.@threads for perm = 1:n_permutations
+        for ch = 1:size(dat, 1)
+            sortix = shuffle(1:size(dat_filtered, 1))
+            d_perm[ch, perm] = stat_function(
+                fast_filter!(dat_filtered, @view(dat_padded[ch, sortix, :]), kernel),
+            )
+            @show ch, perm
+        end
+    end
 end
