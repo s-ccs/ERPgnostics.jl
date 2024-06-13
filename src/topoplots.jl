@@ -2,7 +2,12 @@ function inter_topo(tmp)
     names = unique(tmp.condition)
     obs_tuple = Observable((0, 1, 0))
     f = Figure(size = (3000, 1600))
-    str = @lift("Entropy topoplots: channel - " * string($obs_tuple[3])* ", variable - " * string(names[$obs_tuple[2]]) )
+    str = @lift(
+        "Entropy topoplots: channel - " *
+        string($obs_tuple[3]) *
+        ", variable - " *
+        string(names[$obs_tuple[2]])
+    )
 
     ax = WGLMakie.Axis(
         f[1, 1],
@@ -20,7 +25,8 @@ function inter_topo(tmp)
     )
     hidespines!(ax)
     hidedecorations!(ax)
-    plot_topoplotseries!(f[1, 1],
+    plot_topoplotseries!(
+        f[1, 1],
         tmp,
         0;
         positions = positions_128,
@@ -29,12 +35,14 @@ function inter_topo(tmp)
         visual = (label_scatter = (markersize = 15, strokewidth = 2),),
         layout = (; use_colorbar = true),
         interactive_scatter = obs_tuple,
-        axis = (;xpanlock = true,
-        ypanlock = true,
-        xzoomlock = true,
-        yzoomlock = true,
-        xrectzoom = false,
-        yrectzoom = false,),
+        axis = (;
+            xpanlock = true,
+            ypanlock = true,
+            xzoomlock = true,
+            yzoomlock = true,
+            xrectzoom = false,
+            yrectzoom = false,
+        ),
     )
 
 
@@ -49,7 +57,12 @@ function inter_topo_image(evts_d, evts, erps)
     names = unique(evts_d.condition)
     obs_tuple = Observable((0, 2, 1))
     f = Figure(size = (3000, 1600))
-    str = @lift("Entropy topoplots: channel - " * string($obs_tuple[3])* ", variable - " * string(names[$obs_tuple[2]]) )
+    str = @lift(
+        "Entropy topoplots: channel - " *
+        string($obs_tuple[3]) *
+        ", variable - " *
+        string(names[$obs_tuple[2]])
+    )
 
     ax = GLMakie.Axis(
         f[1, 1:5],
@@ -61,7 +74,8 @@ function inter_topo_image(evts_d, evts, erps)
     )
     hidespines!(ax)
     hidedecorations!(ax)
-    plot_topoplotseries!(f[1, 1:5],
+    plot_topoplotseries!(
+        f[1, 1:5],
         evts_d,
         0;
         positions = positions_128,
@@ -70,7 +84,7 @@ function inter_topo_image(evts_d, evts, erps)
         visual = (label_scatter = (markersize = 15, strokewidth = 2),),
         layout = (; use_colorbar = true),
         interactive_scatter = obs_tuple,
-        colorbar = (; label = "Entropy [d]")
+        colorbar = (; label = "Entropy [d]"),
     )
 
     single_channel_erpimage = @lift(erps[$obs_tuple[3], :, :])
@@ -85,7 +99,7 @@ function inter_topo_image(evts_d, evts, erps)
         show_sortval = true,
         meanplot = true,
         sortval_xlabel = str2,
-        axis = (; title = str) 
+        axis = (; title = str),
     )
 
     on(events(f).mousebutton, priority = 1) do event

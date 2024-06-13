@@ -1,46 +1,4 @@
-begin
-    using Pkg
-    Pkg.activate(".")
-    Pkg.status()
-end
-
-begin
-    using UnfoldMakie
-    using Unfold
-    using CSV, DataFrames
-    using Random, Format
-    using WGLMakie, Makie
-    using Statistics, StatsBase
-    using HDF5, FileIO
-    using Printf
-    using Images
-    using TopoPlots
-    using ImageFiltering
-    using ComputationalResources
-    using Observables
-end
-
-using GLMakie
-GLMakie.activate!(inline=false)
-
-begin
-    evts_init = CSV.read("data/events_init.csv", DataFrame)
-
-    fid = h5open("data/mult.hdf5", "r")
-    erps_init = read(fid["data"]["mult.hdf5"])
-    close(fid)
-
-    ix = evts_init.type .== "fixation"
-    erps = erps_init[:, :, ix]
-end
-evts = DataFrame(CSV.File("data/events.csv"))
-evts_d = CSV.read("data/evts_d.csv", DataFrame) # former output3
-
-# erps (128 channels, 769 mseconds, 2508 trials) - voltage
-# evts (2508 trials, 21 sorting variables) - parameters which can influence voltage
-# evts_d (128 channels, 21 sorting variables) - d/entropy image
-
-function x(evts_d, evts, erps)
+function inter_heatmap(evts_d, evts, erps)
     m = Matrix(evts_d)
     var_i = Observable(1)
     chan_i = Observable(1)
@@ -64,11 +22,11 @@ function x(evts_d, evts, erps)
     #single_channel_erpimage = Observable(erps[1,:,:])
     #sortval = Observable(collect(1. :size(evts,1)))
 
-   #=  map(chan_i,var_i) do ch,va
-        single_channel_erpimage.val = erps[ch, :, :]    
-        sortval[] = ((evts[:,va]))
+    #=  map(chan_i,var_i) do ch,va
+         single_channel_erpimage.val = erps[ch, :, :]    
+         sortval[] = ((evts[:,va]))
 
-    end =#
+     end =#
     single_channel_erpimage = @lift(erps[$chan_i, :, :])
     sortval = @lift(evts[:, $var_i])
 
@@ -78,7 +36,7 @@ function x(evts_d, evts, erps)
         ", variable " *
         string(sort_names[$var_i])
     )
-    
+
     str2 = @lift(string(sort_names[$var_i]))
     plot_erpimage!(
         f[2, 1:5],
@@ -86,13 +44,16 @@ function x(evts_d, evts, erps)
         sortvalues = sortval,
         show_sortval = true,
         sortval_xlabel = str2,
-        axis = (; title = str, xpanlock = true,
-        ypanlock = true,
-        xzoomlock = true,
-        yzoomlock = true,
-        xrectzoom = false,
-        yrectzoom = false,),
-       # xticks = (1:100:size(to_value(single_channel_erpimage), 1)),
+        axis = (;
+            title = str,
+            xpanlock = true,
+            ypanlock = true,
+            xzoomlock = true,
+            yzoomlock = true,
+            xrectzoom = false,
+            yrectzoom = false,
+        ),
+        # xticks = (1:100:size(to_value(single_channel_erpimage), 1)),
         #yticks = (1:100:size(to_value(chosen_image), 2))),
     )
     #println(size(to_value(single_channel_erpimage)))
@@ -111,13 +72,7 @@ function x(evts_d, evts, erps)
     f
 end
 
-x(evts_d, evts, erps) # type varibale is excluded
-
-using UnfoldMakie
-
-
-
-function y(evts_d)
+function inter_heatmap_image(evts_d)
     var_i = Observable(1)
     chan_i = Observable(1)
     m = Matrix(evts_d)
@@ -144,14 +99,7 @@ function y(evts_d)
             pos = Makie.position_on_plot(plot, -1, apply_transform = false)[Vec(1, 2)]
             b = Makie._pixelated_getindex(plot[1][], plot[2][], plot[3][], pos, true)
             chan_i[], var_i[] = b[1], b[2]
-            #println(chan_i[], ' ', var_i[])
         end
     end
     f
 end
-y(evts_d)
-
-
-
-# to do
-# 1. disable dragging

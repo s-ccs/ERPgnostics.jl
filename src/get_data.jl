@@ -41,4 +41,3 @@ CSV.write("data/events_init.csv", events_epoch)
 ix = evts_init.type .== "fixation"
 evts = evts_init[ix, 2:end]
 CSV.write("data/events.csv", evts)
-

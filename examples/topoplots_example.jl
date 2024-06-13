@@ -1,5 +1,5 @@
-include("setup.jl")
-include("topoplots.jl")
+include("../src/setup.jl")
+include("../src/topoplots.jl")
 
 using WGLMakie
 using GLMakie
@@ -28,10 +28,12 @@ begin
     tmp.time = 1:nrow(tmp)
     tmp.label = 1:nrow(tmp)
     rename!(tmp, :variable => :condition, :value => :estimate)
-    tmp.rows = vcat(repeat(["A"], size(tmp, 1) ÷ 4), 
-        repeat(["B"], size(tmp, 1) ÷ 4), 
-        repeat(["C"], size(tmp, 1) ÷ 4), 
-        repeat(["D"], size(tmp, 1) ÷ 4))
+    tmp.rows = vcat(
+        repeat(["A"], size(tmp, 1) ÷ 4),
+        repeat(["B"], size(tmp, 1) ÷ 4),
+        repeat(["C"], size(tmp, 1) ÷ 4),
+        repeat(["D"], size(tmp, 1) ÷ 4),
+    )
 
     tmp1 = filter(x -> x.rows == "A", tmp)
 end
@@ -49,4 +51,3 @@ inter_topo_image(filter(x -> x.rows == "A", tmp), evts, erps)
 inter_topo_image(filter(x -> x.rows == "B", tmp), evts, erps) #fails
 inter_topo_image(filter(x -> x.rows == "C", tmp), evts, erps)
 inter_topo_image(filter(x -> x.rows == "D", tmp), evts, erps)
-

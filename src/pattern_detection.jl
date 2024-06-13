@@ -33,7 +33,12 @@ function mult_chan_pattern_detector_value(dat, f, evts)
     return DataFrame(row)
 end
 
-function mult_chan_pattern_detector_probability(dat, stat_function, evts; n_permutations = 10)
+function mult_chan_pattern_detector_probability(
+    dat,
+    stat_function,
+    evts;
+    n_permutations = 10,
+)
     row = Dict()
     @debug "starting"
     kernel = (ImageFiltering.ReshapedOneD{2,1}(KernelFactors.gaussian(5)),)
@@ -90,7 +95,7 @@ function mult_chan_test(dat, stat_function, n_permutations = 10)
     d_perm = similar(dat, size(dat, 1), n_permutations)
     @debug "starting permutation loop"
     # We permute data for all events in advance
-    
+
     Threads.@threads for perm = 1:n_permutations
         for ch = 1:size(dat, 1)
             sortix = shuffle(1:size(dat_filtered, 1))
