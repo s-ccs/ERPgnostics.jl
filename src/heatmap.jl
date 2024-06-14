@@ -1,4 +1,4 @@
-function inter_heatmap(evts_d, evts, erps)
+function inter_heatmap_image(evts_d, evts, erps)
     m = Matrix(evts_d)
     var_i = Observable(1)
     chan_i = Observable(1)
@@ -18,15 +18,6 @@ function inter_heatmap(evts_d, evts, erps)
     )
     hm = heatmap!(ax, m)
     Colorbar(f[1, 5], hm, labelrotation = -π / 2, label = "Entropy d")
-
-    #single_channel_erpimage = Observable(erps[1,:,:])
-    #sortval = Observable(collect(1. :size(evts,1)))
-
-    #=  map(chan_i,var_i) do ch,va
-         single_channel_erpimage.val = erps[ch, :, :]    
-         sortval[] = ((evts[:,va]))
-
-     end =#
     single_channel_erpimage = @lift(erps[$chan_i, :, :])
     sortval = @lift(evts[:, $var_i])
 
@@ -53,18 +44,12 @@ function inter_heatmap(evts_d, evts, erps)
             xrectzoom = false,
             yrectzoom = false,
         ),
-        # xticks = (1:100:size(to_value(single_channel_erpimage), 1)),
-        #yticks = (1:100:size(to_value(chosen_image), 2))),
     )
-    #println(size(to_value(single_channel_erpimage)))
-
     on(events(f).mousebutton, priority = 1) do event
         if event.button == Mouse.left && event.action == Mouse.press
             plot, _ = pick(ax.scene)
             pos = Makie.position_on_plot(plot, -1, apply_transform = false)[Vec(1, 2)]
-            #@debug pos plot
             b = Makie._pixelated_getindex(plot[1][], plot[2][], plot[3][], pos, true)
-            #@debug b
             chan_i[], var_i[] = b[1], b[2]
             #a = DataInspector(plot)
         end
@@ -72,7 +57,7 @@ function inter_heatmap(evts_d, evts, erps)
     f
 end
 
-function inter_heatmap_image(evts_d)
+function inter_heatmap(evts_d)
     var_i = Observable(1)
     chan_i = Observable(1)
     m = Matrix(evts_d)

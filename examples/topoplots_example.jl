@@ -8,20 +8,15 @@ Makie.inline!(false)
 
 # data
 begin
-    evts_init = CSV.read("data/events_init.csv", DataFrame)
-
-    fid = h5open("data/mult.hdf5", "r")
-    erps_init = read(fid["data"]["mult.hdf5"])
+    fid = h5open("data/data_fixations.hdf5", "r")
+    erps_init = read(fid["data"]["data_fixations.hdf5"])
     close(fid)
 
-    ix = evts_init.type .== "fixation"
-    erps = erps_init[:, :, ix]
+    evts = DataFrame(CSV.File("data/events.csv"))
+    evts_d = CSV.read("data/evts_d.csv", DataFrame)
+    positions_128 = JLD2.load_object("data/positions_128.jld2")
 end
-evts = DataFrame(CSV.File("data/events.csv"))
-evts_d = CSV.read("data/evts_d.csv", DataFrame)
-positions_128 = JLD2.load_object("data/positions_128.jld2")
 
-#Δbin = 140
 
 begin
     tmp = stack(evts_d)
@@ -34,7 +29,6 @@ begin
         repeat(["C"], size(tmp, 1) ÷ 4),
         repeat(["D"], size(tmp, 1) ÷ 4),
     )
-
     tmp1 = filter(x -> x.rows == "A", tmp)
 end
 
