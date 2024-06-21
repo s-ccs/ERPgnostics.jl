@@ -22,7 +22,7 @@ GLMakie.activate!(inline = false)
 
 begin
     fid = h5open("data/data_fixations.hdf5", "r")
-    erps_init = read(fid["data"]["data_fixations.hdf5"])
+    erps_fix = read(fid["data"]["data_fixations.hdf5"])
     close(fid)
 
     evts = DataFrame(CSV.File("data/events.csv"))
@@ -35,4 +35,4 @@ end
 
 inter_heatmap(evts_d)
 
-inter_heatmap_image(evts_d, evts, erps)
+inter_heatmap_image(evts_d, evts, erps_fix)

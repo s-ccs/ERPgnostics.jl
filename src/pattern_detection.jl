@@ -13,7 +13,7 @@ function single_chan_pattern_detector(dat, func, evts)
     e = zeros(0)
     for n in names(evts)
         dat_sorted = slow_filter((dat[:, sortperm(evts[!, n])]))
-        e = append!(e, round.(func(dat_sorted), digits = 2))
+        e = append!(e, round.(func(dat_sorted), digits=2))
     end
     return DataFrame("Sorting values" => names(evts), "Mean row range" => e)
 end
@@ -24,7 +24,7 @@ function mult_chan_pattern_detector_value(dat, f, evts)
         col = zeros(0)
         for i = 1:size(dat)[1] # iterate over chanels 
             dat_sorted = slow_filter(dat[i, :, sortperm(evts[!, n])])
-            col = append!(col, round.(f(dat_sorted), digits = 2))
+            col = append!(col, round.(f(dat_sorted), digits=2))
         end
         println(n)
         println(col)
@@ -37,7 +37,7 @@ function mult_chan_pattern_detector_probability(
     dat,
     stat_function,
     evts;
-    n_permutations = 10,
+    n_permutations=10,
 )
     row = Dict()
     @debug "starting"
@@ -60,7 +60,7 @@ function mult_chan_pattern_detector_probability(
             @show ch, perm
         end
     end
-    mean_d_perm = mean(d_perm, dims = 2)[:, 1]
+    mean_d_perm = mean(d_perm, dims=2)[:, 1]
 
     Threads.@threads for n in names(evts)
         sortix = sortperm(evts[!, n])
@@ -69,7 +69,8 @@ function mult_chan_pattern_detector_probability(
             fast_filter!(dat_filtered, kernel, @view(dat_padded[ch, sortix, :]))
             d_emp = stat_function(dat_filtered)
 
-            col[ch] = abs(d_emp - mean_d_perm[ch])
+            #col[ch] = abs(d_emp - mean_d_perm[ch]) # calculate raw effect size
+            col[ch] = mean(d_emp .< @view(mean_d_perm[ch, :])) # calculate p-value
             print(ch, " ")
         end
         println(n)
@@ -79,12 +80,12 @@ function mult_chan_pattern_detector_probability(
 end
 
 function range_mean(dat_filt)
-    a = extrema(dat_filt, dims = 2)
+    a = extrema(dat_filt, dims=2)
     b = last.(a) .- first.(a)
     return mean(b)
 end
 
-function mult_chan_test(dat, stat_function, n_permutations = 10)
+function mult_chan_test(dat, stat_function, n_permutations=10)
     row = Dict()
     @debug "starting"
     kernel = (ImageFiltering.ReshapedOneD{2,1}(KernelFactors.gaussian(5)),)
@@ -100,9 +101,21 @@ function mult_chan_test(dat, stat_function, n_permutations = 10)
         for ch = 1:size(dat, 1)
             sortix = shuffle(1:size(dat_filtered, 1))
             d_perm[ch, perm] = stat_function(
-                fast_filter!(dat_filtered, @view(dat_padded[ch, sortix, :]), kernel),
+                fast_filter!(dat_filtered, kernel, @view(dat_padded[ch, sortix, :])),
             )
             @show ch, perm
         end
+    end
+end
+
+
+entropy_robust(img::AbstractArray; kind = :shannon, nbins = 256) = entropy_robust(Images.ImageQualityIndexes._log(kind), img; nbins=nbins)
+function entropy_robust(logᵦ::Log, img; nbins=256) where {Log<:Function}
+    img_trimmed = collect(trim(img[:], prop=0.1))
+    _, counts = Images.ImageContrastAdjustment.build_histogram(img_trimmed, nbins)
+    n = length(img)
+    _zero = zero(first(counts) / n)
+    -sum(counts) do c
+        c > 0 ? c / n * logᵦ(c / n) : _zero
     end
 end
