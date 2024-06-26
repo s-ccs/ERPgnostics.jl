@@ -40,12 +40,12 @@ inter_topo(filter(x -> x.rows == "D", tmp))
 inter_topo_image(tmp1, evts, erps)
 
 inter_topo_image(filter(x -> x.rows == "A", tmp), evts, erps_fix, time)
-inter_topo_image(filter(x -> x.rows == "B", tmp), evts, erps_fix) #fails
-inter_topo_image(filter(x -> x.rows == "C", tmp), evts, erps_fix)
-inter_topo_image(filter(x -> x.rows == "D", tmp), evts, erps_fix)
+inter_topo_image(filter(x -> x.rows == "B", tmp), evts, erps_fix, time) #fails
+inter_topo_image(filter(x -> x.rows == "C", tmp), evts, erps_fix, time)
+inter_topo_image(filter(x -> x.rows == "D", tmp), evts, erps_fix, time)
 
 
-
+filter(x -> x.condition == "fix_samebox", tmp)
 
 begin
     tmp2 = stack(evts_mf)
@@ -60,4 +60,10 @@ begin
     )
 end
 
-inter_topo_image(filter(x -> x.rows == "C", tmp2), evts, erps_fix)
+inter_topo_image(filter(x -> x.rows == "C", tmp2), evts, erps_fix, time)
+
+
+er = filter(x -> x.rows == "B", tmp)
+er
+inter_topo_image(filter(x -> x.condition != "fix_type", er), evts, erps_fix, time)
+describe(filter(x -> x.condition == "fix_type", tmp))

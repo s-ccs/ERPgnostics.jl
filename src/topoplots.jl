@@ -52,14 +52,14 @@ function inter_topo(tmp)
     f
 end
 
-function inter_topo_image(evts_d, evts, erps, time)
-    names = unique(evts_d.condition)
+function inter_topo_image(pattern_detection_values, evts, erps, time)
+    names = unique(pattern_detection_values.condition)
     obs_tuple = Observable((0, 2, 1))
     f = Figure(size = (3000, 1600))
     str = @lift(
         "Entropy topoplots: channel - " *
         string($obs_tuple[3]) *
-        ", variable - " *
+        ", sorting variable - " *
         string(names[$obs_tuple[2]])
     )
 
@@ -75,22 +75,28 @@ function inter_topo_image(evts_d, evts, erps, time)
     hidedecorations!(ax)
     plot_topoplotseries!(
         f[1, 1:5],
-        evts_d,
+        pattern_detection_values,
         0;
         positions = positions_128,
         col_labels = true,
         mapping = (; col = :condition),
-        visual = (label_scatter = (markersize = 15, strokewidth = 2),),
+        visual = (label_scatter = (markersize = 15, strokewidth = 2), contours = (; levels = 0),
+            colormap = Reverse(:RdGy_4)),
         layout = (; use_colorbar = true),
         interactive_scatter = obs_tuple,
-        colorbar = (; label = "Entropy [d]"),
+        colorbar = (; label = "Pattern detection function value", colorrange = (0, 1)),
     )
 
     single_channel_erpimage = @lift(erps[$obs_tuple[3], :, :])
     sortval = @lift(evts[:, names[$obs_tuple[2]]])
 
     str2 = @lift(string(names[$obs_tuple[2]]))
-    println(size(single_channel_erpimage[]))
+    str3 = @lift(
+        "ERP image: channel - " *
+        string($obs_tuple[3]) *
+        ", sorting variable - " *
+        string(names[$obs_tuple[2]])
+    )
     plot_erpimage!(
         f[2, 1:5], time,
         single_channel_erpimage;
@@ -98,7 +104,7 @@ function inter_topo_image(evts_d, evts, erps, time)
         show_sortval = true,
         meanplot = true,
         sortval_xlabel = str2,
-        axis = (; title = str),
+        axis = (; title = str3),
     )
 
     on(events(f).mousebutton, priority = 1) do event
