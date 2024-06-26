@@ -1,4 +1,4 @@
-inlude("setup.jl")
+include("setup.jl")
 
 begin
     using PyMNE
@@ -8,7 +8,7 @@ begin
     @info format(file_stub, subject, "eeg.set")
     raw = PyMNE.io.read_raw_eeglab(format(file_stub, subject, "eeg.set"))
     data = raw.get_data(units = "uV")
-    events = CSV.read(format(file_stub, subject, "events.tsv"), DataFrame)
+    evts = DataFrame(CSV.File("data/events.csv"))
     srate = pyconvert(Float64, raw.info["sfreq"])
 end
 
@@ -17,9 +17,9 @@ positions_128 = to_positions(raw)
 JLD2.save_object("data/positions_128.jld2", positions_128)
 
 begin
-    events.latency .= events.onset .* srate
-    data_epoch_raw, times = Unfold.epoch(pyconvert(Array, data), events, (-0.5, 1), srate)
-    events_epoch, data_epoch0 = Unfold.drop_missing_epochs(events, data_epoch_raw)
+    evts.latency .= evts.onset .* srate
+    data_epoch_raw, times = Unfold.epoch(pyconvert(Array, data), evts, (-0.5, 1), srate)
+    evts_epoch, data_epoch0 = Unfold.drop_missing_epochs(evts, data_epoch_raw)
     #data_epoch = data_epoch0 .- mean(data_epoch0, dims=2) #normalisation
 end
 typeof(data_epoch0[32, :, :])
@@ -37,7 +37,7 @@ h5open("data/mult.hdf5", "w") do file
     close(file)
 end
 
-CSV.write("data/events_init.csv", events_epoch)
+CSV.write("data/events_init.csv", evts_epoch)
 ix = evts_init.type .== "fixation"
 evts = evts_init[ix, 2:end]
 CSV.write("data/events.csv", evts)

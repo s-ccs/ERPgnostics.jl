@@ -45,7 +45,6 @@ function inter_topo(tmp)
         ),
     )
 
-
     on(events(f).mousebutton, priority = 1) do event
         if event.button == Mouse.left && event.action == Mouse.press
         end
@@ -53,7 +52,7 @@ function inter_topo(tmp)
     f
 end
 
-function inter_topo_image(evts_d, evts, erps)
+function inter_topo_image(evts_d, evts, erps, time)
     names = unique(evts_d.condition)
     obs_tuple = Observable((0, 2, 1))
     f = Figure(size = (3000, 1600))
@@ -93,7 +92,7 @@ function inter_topo_image(evts_d, evts, erps)
     str2 = @lift(string(names[$obs_tuple[2]]))
     println(size(single_channel_erpimage[]))
     plot_erpimage!(
-        f[2, 1:5],
+        f[2, 1:5], time,
         single_channel_erpimage;
         sortvalues = sortval,
         show_sortval = true,

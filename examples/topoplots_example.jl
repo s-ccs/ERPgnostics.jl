@@ -15,6 +15,7 @@ begin
     evts = DataFrame(CSV.File("data/events.csv"))
     evts_d = CSV.read("data/evts_d.csv", DataFrame)
     positions_128 = JLD2.load_object("data/positions_128.jld2")
+    time = -0.5:0.001953125:1.0
 end
 
 
@@ -38,7 +39,7 @@ inter_topo(filter(x -> x.rows == "D", tmp))
 
 inter_topo_image(tmp1, evts, erps)
 
-inter_topo_image(filter(x -> x.rows == "A", tmp), evts, erps_fix)
+inter_topo_image(filter(x -> x.rows == "A", tmp), evts, erps_fix, time)
 inter_topo_image(filter(x -> x.rows == "B", tmp), evts, erps_fix) #fails
 inter_topo_image(filter(x -> x.rows == "C", tmp), evts, erps_fix)
 inter_topo_image(filter(x -> x.rows == "D", tmp), evts, erps_fix)
