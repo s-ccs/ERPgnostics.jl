@@ -21,4 +21,6 @@ begin
 	using Observables
 	using DSP
 	using JLD2
+	using WGLMakie
+	using Revise
 end

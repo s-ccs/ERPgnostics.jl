@@ -1,4 +1,4 @@
-include("../src/setup.jl")
+include("setup.jl")
 include("../src/heatmap.jl")
 
 begin

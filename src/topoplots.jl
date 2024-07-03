@@ -1,7 +1,7 @@
 function inter_topo(tmp)
     names = unique(tmp.condition)
     obs_tuple = Observable((0, 1, 0))
-    f = Figure(size = (3000, 1600))
+    f = Figure(size = (1500, 800))
     str = @lift(
         "Entropy topoplots: channel - " *
         string($obs_tuple[3]) *
@@ -9,7 +9,7 @@ function inter_topo(tmp)
         string(names[$obs_tuple[2]])
     )
 
-    ax = WGLMakie.Axis(
+    ax = Makie.Axis(
         f[1, 1],
         xautolimitmargin = (0, 0),
         yautolimitmargin = (0, 0),
@@ -29,12 +29,12 @@ function inter_topo(tmp)
         f[1, 1],
         tmp,
         0;
+        mapping = (; col = :condition),
         positions = positions_128,
         col_labels = true,
-        mapping = (; col = :condition),
+        interactive_scatter = obs_tuple,
         visual = (label_scatter = (markersize = 15, strokewidth = 2),),
         layout = (; use_colorbar = true),
-        interactive_scatter = obs_tuple,
         axis = (;
             xpanlock = true,
             ypanlock = true,
@@ -63,7 +63,7 @@ function inter_topo_image(pattern_detection_values, evts, erps, time)
         string(names[$obs_tuple[2]])
     )
 
-    ax = GLMakie.Axis(
+    ax = Makie.Axis(
         f[1, 1:5],
         xautolimitmargin = (0, 0),
         yautolimitmargin = (0, 0),

@@ -1,8 +1,5 @@
-includet("../src/setup.jl")
+includet("setup.jl")
 includet("../src/topoplots.jl")
-
-using WGLMakie
-using GLMakie
 
 Makie.inline!(false)
 
@@ -17,7 +14,6 @@ begin
     positions_128 = JLD2.load_object("data/positions_128.jld2")
     time = -0.5:0.001953125:1.0
 end
-
 
 begin
     tmp = stack(evts_d)
@@ -45,6 +41,8 @@ inter_topo_image(filter(x -> x.rows == "C", tmp), evts, erps_fix, time)
 inter_topo_image(filter(x -> x.rows == "D", tmp), evts, erps_fix, time)
 
 
+
+# debugging zone
 filter(x -> x.condition == "fix_samebox", tmp)
 
 begin
@@ -66,4 +64,6 @@ inter_topo_image(filter(x -> x.rows == "C", tmp2), evts, erps_fix, time)
 er = filter(x -> x.rows == "B", tmp)
 er
 inter_topo_image(filter(x -> x.condition != "fix_type", er), evts, erps_fix, time)
+inter_topo_image(er, evts, erps_fix, time)
+
 describe(filter(x -> x.condition == "fix_type", tmp))
