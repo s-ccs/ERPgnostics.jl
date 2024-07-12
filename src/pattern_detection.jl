@@ -2,7 +2,7 @@ function slow_filter(data_init)
     return UnfoldMakie.imfilter(data_init, UnfoldMakie.Kernel.gaussian((0, max(50, 0))))
 end
 
-function fast_filter!(dat_filtered, kernel, dat) #
+function fast_filter!(dat_filtered, kernel, dat) # broken
     #r = Images.ImageFiltering.ComputationalResources.CPU1(Images.ImageFiltering.FIR())
     DSP.filt!(dat_filtered, kernel[1].data.parent, dat)
     return dat_filtered

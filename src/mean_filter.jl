@@ -17,7 +17,6 @@ function mean_filter!(dat_filtered, dat)
     return dat_filtered
 end
 
-
 function mult_chan_pattern_detector_probability_meanfilter(
     dat,
     stat_function,
