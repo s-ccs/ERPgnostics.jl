@@ -1,4 +1,4 @@
-includet("../src/setup.jl")
+includet("setup.jl")
 includet("../src/pattern_detection.jl")
 includet("../src/mean_filter.jl")
 
@@ -60,6 +60,8 @@ end
     evts_d = mult_chan_pattern_detector_probability(erps_fix, Images.entropy, evts) #249 sec, with threads - 30 sec
 end
 
+CSV.write("data/evts_d.csv", evts_d)
+
 begin
     f = Figure()
     ax = CairoMakie.Axis(f[1, 1], xlabel="Channels", ylabel="Sorting event variables")
@@ -84,9 +86,8 @@ end
     evts_d = mult_chan_test(dat_f, entropy_robust)
 end
 
-#entropy_rownormalized = (x)->Images.entropy(x.-mean(x,dims=2))
-
 # PATTERN DECTECTION 5
-evts_mf = mult_chan_pattern_detector_probability_meanfilter(erps_fix, Images.entropy, evts)
+evts_mf = mult_chan_pattern_detector_probability_meanfilter(erps_fix, Images.entropy, evts, n_permutations=100)
+CSV.write("data/evts_mf.csv", evts_mf)
 
 evts_mf = mult_chan_pattern_detector_probability_meanfilter(erps_fix, entropy_robust, evts, n_permutations=100)

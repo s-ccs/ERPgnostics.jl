@@ -10,8 +10,8 @@ end
 
 Base.length(c::TimeVaryingComponent) = c.maxlength
 
-# this is for ab-line /
-function basis_linear(evts)
+# this is for abline /
+function basis_linear(evts, maxlength)
     basis =
         pad_array.(Ref(UnfoldSim.DSP.hanning(50)), Int.(0 .- evts.duration_linear), 0)
     return basis
@@ -29,7 +29,7 @@ function basis_lognormal(evts, maxlength)
 end
 
 # this is for the symmetrical fan \/
-function basis_hanning(evts)
+function basis_hanning(evts, maxlength)
     if "durationB" ∈ names(evts)
         fn = "durationB"
         @info fn
@@ -56,7 +56,6 @@ function truncate_basisfunction(basis, maxlength)
     end
     return reduce(hcat, basis)
 end
-
 
 function simulate_alldata()
     design = SingleSubjectDesign(;

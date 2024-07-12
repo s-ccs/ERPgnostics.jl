@@ -1,6 +1,5 @@
-function slow_filter(img)
-    filtered_data = UnfoldMakie.imfilter(img, UnfoldMakie.Kernel.gaussian((1, max(30, 0))))
-    return filtered_data
+function slow_filter(data_init)
+    return UnfoldMakie.imfilter(data_init, UnfoldMakie.Kernel.gaussian((0, max(50, 0))))
 end
 
 function fast_filter!(dat_filtered, kernel, dat) #
@@ -37,45 +36,46 @@ function mult_chan_pattern_detector_probability(
     dat,
     stat_function,
     evts;
-    n_permutations=10,
+    n_permutations = 10,
 )
+    if (size(dat, 3) != size(evts, 1))
+        error("different number of trials between erp data and event data ")
+    end
     row = Dict()
-    @debug "starting"
-    kernel = (ImageFiltering.ReshapedOneD{2,1}(KernelFactors.gaussian(5)),)
-    #println("kernel: ", kernel)
+   # kernel = (ImageFiltering.ReshapedOneD{2,1}(KernelFactors.gaussian(5)),)
     dat_filtered = similar(dat, size(dat, 3), size(dat, 2)) # transposition to have trials in first dimension already here
     dat_padded = permutedims(dat, (1, 3, 2))
-    #println("dat_padded: ", size(dat_padded))
     d_perm = similar(dat, size(dat, 1), n_permutations)
     @debug "starting permutation loop"
     # We permute data for all events in advance
+    pbar = ProgressBar(total=size(dat, 1))
     Threads.@threads for ch = 1:size(dat, 1)
         for perm = 1:n_permutations
 
             sortix = shuffle(1:size(dat_filtered, 1)) # a vector of indecies
-            #println("dat_padded[ch, sortix, :]: ", size(dat_padded[ch, sortix, :]))
             d_perm[ch, perm] = stat_function(
-                fast_filter!(dat_filtered, kernel, @view(dat_padded[ch, sortix, :])),
+                slow_filter(@view(dat_padded[ch, sortix, :])),
             )
-            @show ch, perm
         end
+        update(pbar) 
     end
     mean_d_perm = mean(d_perm, dims=2)[:, 1]
 
+    pbar = ProgressBar(total=length(names(evts)))
     Threads.@threads for n in names(evts)
         sortix = sortperm(evts[!, n])
         col = fill(NaN, size(dat, 1))
+        
         for ch = 1:size(dat, 1)
-            fast_filter!(dat_filtered, kernel, @view(dat_padded[ch, sortix, :]))
-            d_emp = stat_function(dat_filtered)
+            d_emp = stat_function(slow_filter(@view(dat_padded[ch, sortix, :])))
 
-            #col[ch] = abs(d_emp - mean_d_perm[ch]) # calculate raw effect size
-            col[ch] = mean(d_emp .< @view(mean_d_perm[ch, :])) # calculate p-value
-            print(ch, " ")
+            col[ch] = abs(d_emp - mean_d_perm[ch]) # calculate raw effect size
+            #col[ch] = mean(d_emp .< @view(mean_d_perm[ch, :])) # calculate p-value
         end
-        println(n)
+        update(pbar) 
         row[n] = get(row, n, col) # add new key in dict
     end
+    
     return DataFrame(row)
 end
 

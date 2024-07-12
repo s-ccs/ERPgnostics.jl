@@ -3,13 +3,13 @@ function inter_topo(tmp)
     obs_tuple = Observable((0, 1, 0))
     f = Figure(size = (1500, 800))
     str = @lift(
-        "Entropy topoplots: channel - " *
+        "Interactive topoplots: channel - " *
         string($obs_tuple[3]) *
         ", variable - " *
         string(names[$obs_tuple[2]])
     )
 
-    ax = Makie.Axis(
+    ax = WGLMakie.Axis(
         f[1, 1],
         xautolimitmargin = (0, 0),
         yautolimitmargin = (0, 0),
@@ -27,8 +27,7 @@ function inter_topo(tmp)
     hidedecorations!(ax)
     plot_topoplotseries!(
         f[1, 1],
-        tmp,
-        0;
+        tmp;
         mapping = (; col = :condition),
         positions = positions_128,
         col_labels = true,
@@ -53,50 +52,49 @@ function inter_topo(tmp)
 end
 
 function inter_topo_image(pattern_detection_values, evts, erps, time)
-    names = unique(pattern_detection_values.condition)
-    obs_tuple = Observable((0, 2, 1))
-    f = Figure(size = (3000, 1600))
+    cond_names = unique(pattern_detection_values.condition)
+    obs_tuple = Observable((0, 1, 1))
+    f = Figure()#size = (3000, 1600))
     str = @lift(
         "Entropy topoplots: channel - " *
         string($obs_tuple[3]) *
         ", sorting variable - " *
-        string(names[$obs_tuple[2]])
+        string(cond_names[$obs_tuple[2]])
     )
 
-    ax = Makie.Axis(
+    ax = GLMakie.Axis(
         f[1, 1:5],
-        xautolimitmargin = (0, 0),
-        yautolimitmargin = (0, 0),
+        #xautolimitmargin = (0, 0),
+        #yautolimitmargin = (0, 0),
+        xlabelvisible = false,
         title = str,
-        xlabel = "Channels",
-        ylabel = "Index of event variable",
     )
     hidespines!(ax)
     hidedecorations!(ax)
     plot_topoplotseries!(
         f[1, 1:5],
-        pattern_detection_values,
-        0;
+        pattern_detection_values;
         positions = positions_128,
         col_labels = true,
         mapping = (; col = :condition),
+        axis = (; xlabel = "Conditions", xlabelvisible = false),
         visual = (label_scatter = (markersize = 15, strokewidth = 2), contours = (; levels = 0),
             colormap = Reverse(:RdGy_4)),
         layout = (; use_colorbar = true),
         interactive_scatter = obs_tuple,
-        colorbar = (; label = "Pattern detection function value", colorrange = (0, 1)),
+        colorbar = (; label = "Pattern detection function value", colorrange = (0, 1), height = 300),
     )
 
     single_channel_erpimage = @lift(erps[$obs_tuple[3], :, :])
-    sortval = @lift(evts[:, names[$obs_tuple[2]]])
-
-    str2 = @lift(string(names[$obs_tuple[2]]))
-    str3 = @lift(
+    sortval = @lift(evts[:, cond_names[$obs_tuple[2]]])
+   
+    str2 = @lift(string(cond_names[$obs_tuple[2]]))
+   #=  str3 = @lift(
         "ERP image: channel - " *
         string($obs_tuple[3]) *
         ", sorting variable - " *
-        string(names[$obs_tuple[2]])
-    )
+        string(cond_names[$obs_tuple[2]])
+    ) =#
     plot_erpimage!(
         f[2, 1:5], time,
         single_channel_erpimage;
@@ -104,7 +102,7 @@ function inter_topo_image(pattern_detection_values, evts, erps, time)
         show_sortval = true,
         meanplot = true,
         sortval_xlabel = str2,
-        axis = (; title = str3),
+        axis = (; title = "ERP image"),
     )
 
     on(events(f).mousebutton, priority = 1) do event
