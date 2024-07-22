@@ -1,6 +1,8 @@
 includet("setup.jl")
 includet("../src/pattern_generation.jl")
 
+data_all, evts = simulate_alldata()
+
 let
     f = Figure(size = (500, 1200))
     plot_erpimage!(
@@ -40,4 +42,6 @@ let
         axis = (; title = "Abline; sorted by duration_linear"),
     )
     f
+    save("assets/patterns.png", f)
 end
+
