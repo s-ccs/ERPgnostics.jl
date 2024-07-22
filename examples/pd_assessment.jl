@@ -9,7 +9,6 @@ plot_erpimage(data_all)
 plot_erpimage(data_all; erpblur=51)
 plot_erpimage(data_all; erpblur=51, sortvalues=evts.Δlatency)
 
-
 # functions
 function basic(data_all; erpblur=51)
     return (UnfoldMakie.imfilter(data_all, UnfoldMakie.Kernel.gaussian((erpblur, 0))))

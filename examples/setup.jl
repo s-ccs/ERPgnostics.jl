@@ -2,7 +2,7 @@ begin
 	using Pkg
     Pkg.activate(".")
 	Pkg.status()
-	ENV["JULIA_DEBUG"] = "UnfoldMakie, Main"
+	ENV["JULIA_DEBUG"] = "Main"
 end
 
 begin 
