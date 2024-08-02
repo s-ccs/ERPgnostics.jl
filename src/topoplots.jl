@@ -1,4 +1,4 @@
-function inter_topo(tmp)
+function inter_topo(tmp; positions = positions_128)
     names = unique(tmp.condition)
     obs_tuple = Observable((0, 1, 0))
     f = Figure(size = (1500, 800))
@@ -29,7 +29,7 @@ function inter_topo(tmp)
         f[1, 1],
         tmp;
         mapping = (; col = :condition),
-        positions = positions_128,
+        positions = positions,
         col_labels = true,
         interactive_scatter = obs_tuple,
         visual = (label_scatter = (markersize = 15, strokewidth = 2),),
@@ -51,7 +51,7 @@ function inter_topo(tmp)
     f
 end
 
-function inter_topo_image(pattern_detection_values, evts, erps, time)
+function inter_topo_image(pattern_detection_values, evts, erps, time; positions = positions_128)
     cond_names = unique(pattern_detection_values.condition)
     obs_tuple = Observable((0, 1, 1))
     f = Figure()#size = (3000, 1600))
@@ -74,7 +74,7 @@ function inter_topo_image(pattern_detection_values, evts, erps, time)
     plot_topoplotseries!(
         f[1, 1:5],
         pattern_detection_values;
-        positions = positions_128,
+        positions = positions,
         col_labels = true,
         mapping = (; col = :condition),
         axis = (; xlabel = "Conditions", xlabelvisible = false),
