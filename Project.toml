@@ -1,3 +1,8 @@
+name = "ERPgnostics"
+authors = ["Vladimir Mikheev", "Quynh Ngo", "Benedikt Ehinger"]
+uuid = "b811cc8a-7213-4a66-9205-28465b3b3ba1"
+version = "0.0.1"
+
 [deps]
 BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
