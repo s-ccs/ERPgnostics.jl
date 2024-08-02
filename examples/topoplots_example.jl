@@ -59,5 +59,3 @@ begin
 end
 
 inter_topo_image(filter(x -> x.rows == "A", tmp2), evts, erps_fix, timing)
-
-plot_erpimage(erps_fix[:, :, 1]; meanplot = true)

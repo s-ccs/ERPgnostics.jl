@@ -27,3 +27,5 @@ begin
 	using Revise
 	using ProgressBars
 end
+
+# add dev /store/users/mikheev/projects/unfold_dev/dev/UnfoldMakie

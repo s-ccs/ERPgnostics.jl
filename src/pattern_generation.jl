@@ -57,7 +57,8 @@ function truncate_basisfunction(basis, maxlength)
     return reduce(hcat, basis)
 end
 
-function simulate_alldata()
+function simulate_alldata(μ = 3.2, σ = 0.5)
+    @debug "test"
     design = SingleSubjectDesign(;
         conditions = Dict(
             :condition => ["car", "face"],
@@ -86,14 +87,13 @@ function simulate_alldata()
         MersenneTwister(1),
         design,
         [p1, n1, p3, componentA, componentB, componentC],
-        LogNormalOnset(; μ = 3.2, σ = 0.5),#UniformOnset(; width = 30, offset = 30),
+        LogNormalOnset(; μ = μ, σ = σ),#UniformOnset(; width = 30, offset = 30),
         PinkNoise(),
         return_epoched = true,
     )
     evts.Δlatency = vcat(diff(evts.latency), 0) # divide time on epochs
     data = data .- mean(data, dims = 2) # normalisation
     return data, evts
-    #@info UnfoldSim.simulate_component(MersenneTwister(1),componentC,design)
 end
 
 function UnfoldSim.simulate_component(rng, c::TimeVaryingComponent, design::AbstractDesign)
