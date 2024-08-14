@@ -10,6 +10,28 @@ end
 
 Base.length(c::TimeVaryingComponent) = c.maxlength
 
+function UnfoldSim.simulate_component(rng, c::TimeVaryingComponent, design::AbstractDesign)
+    evts = generate_events(design)
+
+    data = c.beta .* c.basisfunction(evts, c.maxlength)
+    return truncate_basisfunction(data, c.maxlength)
+
+end
+
+"""
+    basis_linear(evts, maxlength)
+
+Simulate linear basis.
+
+## Arguments
+
+- `evts::DataFrame`\\
+    tmp
+- `maxlength::DataFrame`\\
+    tmp
+
+**Return Value:** basis. 
+"""
 # this is for abline /
 function basis_linear(evts, maxlength)
     basis =
@@ -48,7 +70,7 @@ function truncate_basisfunction(basis, maxlength)
     difftomax = maxlength .- length.(basis)
     if any(difftomax .< 0)
         @warn "Basis longer than maxlength in at least one case. either increase maxlength or redefine function. Attempt to truncate the basis"
-        basis[difftomax.>0] =
+        basis[difftomax .> 0] =
             pad_array.(basis[difftomax.>0], difftomax[difftomax.>0], 0)
         basis = [b[1:maxlength] for b in basis]
     else
@@ -57,8 +79,24 @@ function truncate_basisfunction(basis, maxlength)
     return reduce(hcat, basis)
 end
 
-function simulate_alldata(μ = 3.2, σ = 0.5)
-    @debug "test"
+"""
+    simulate_6patterns(μ = 3.2, σ = 0.5)
+
+Simulate 6 ERP patterns in one dataset.\\
+Simulated patterns: Sigmoid, One-sided fan, Two-sided fan, Diverging bar, Hourglass bar, Tilted bar.\\
+Columns in resulting sim\\_6patterns Data Frame to simulate this patterns: Δlatency, duration, durationB, iscar, continuous, duration_linear.
+
+
+## Arguments
+
+- `μ::Float = 0.5`\\
+    Controls mean.
+- `σ::Float = 3.2`\\
+    Controls standart deviation.
+
+**Return Value:** sim\\_6patterns::Matrix{Float64} with voltages and sim_evts::DataFrame with events. 
+"""
+function simulate_6patterns(μ = 3.2, σ = 0.5; tmp = nothing)
     design = SingleSubjectDesign(;
         conditions = Dict(
             :condition => ["car", "face"],
@@ -83,7 +121,7 @@ function simulate_alldata(μ = 3.2, σ = 0.5)
     componentB = TimeVaryingComponent(basis_hanning, 100, -10)
     componentC = TimeVaryingComponent(basis_linear, 100, 5)
 
-    data, evts = simulate(
+    data, sim_evts = simulate(
         MersenneTwister(1),
         design,
         [p1, n1, p3, componentA, componentB, componentC],
@@ -91,16 +129,7 @@ function simulate_alldata(μ = 3.2, σ = 0.5)
         PinkNoise(),
         return_epoched = true,
     )
-    evts.Δlatency = vcat(diff(evts.latency), 0) # divide time on epochs
-    data = data .- mean(data, dims = 2) # normalisation
-    return data, evts
-end
-
-function UnfoldSim.simulate_component(rng, c::TimeVaryingComponent, design::AbstractDesign)
-
-    evts = generate_events(design)
-
-    data = c.beta .* c.basisfunction(evts, c.maxlength)
-    return truncate_basisfunction(data, c.maxlength)
-
+    sim_evts.Δlatency = vcat(diff(sim_evts.latency), 0) # divide time on epochs
+    sim_6patterns = data .- mean(data, dims = 2) # normalisation
+    return sim_6patterns, sim_evts
 end

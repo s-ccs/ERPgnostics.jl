@@ -29,28 +29,28 @@ begin
     )
 end
 
-inter_topo(filter(x -> x.rows == "A", pattern_detection_values))
-inter_topo(filter(x -> x.rows == "B", pattern_detection_values))
-inter_topo(filter(x -> x.rows == "C", pattern_detection_values))
-inter_topo(filter(x -> x.rows == "D", pattern_detection_values))
+inter_toposeries(filter(x -> x.rows == "A", pattern_detection_values))
+inter_toposeries(filter(x -> x.rows == "B", pattern_detection_values))
+inter_toposeries(filter(x -> x.rows == "C", pattern_detection_values))
+inter_toposeries(filter(x -> x.rows == "D", pattern_detection_values))
 
-inter_topo_image(pattern_detection_values1, evts, erps)
+inter_toposeries_image(pattern_detection_values1, evts, erps)
 
-inter_topo_image(filter(x -> x.rows == "A", pattern_detection_values), evts, erps_fix, timing)
-inter_topo_image(filter(x -> x.rows == "B", pattern_detection_values), evts, erps_fix, timing) #fails
-inter_topo_image(filter(x -> x.rows == "C", pattern_detection_values), evts, erps_fix, timing)
-inter_topo_image(filter(x -> x.rows == "D", pattern_detection_values), evts, erps_fix, timing)
+inter_toposeries_image(filter(x -> x.rows == "A", pattern_detection_values), evts, erps_fix, timing)
+inter_toposeries_image(filter(x -> x.rows == "B", pattern_detection_values), evts, erps_fix, timing) #fails
+inter_toposeries_image(filter(x -> x.rows == "C", pattern_detection_values), evts, erps_fix, timing)
+inter_toposeries_image(filter(x -> x.rows == "D", pattern_detection_values), evts, erps_fix, timing)
 
-inter_topo_image(filter(x -> x.condition == "fix_samebox", pattern_detection_values), evts, erps_fix, timing)
+inter_toposeries_image(filter(x -> x.condition == "fix_samebox", pattern_detection_values), evts, erps_fix, timing)
 
 
 # make that workable
 begin
-    data_all, evts_sim = simulate_alldata()
+    data_all, evts_sim = simulate_6patterns()
     timing = -0.5:0.001953125:1.0
 end
 
-inter_topo_image(pattern_detection_values, evts_sim, data_all, timing; positions_128 = positions_128)
+inter_toposeries_image(pattern_detection_values, evts_sim, data_all, timing; positions_128 = positions_128)
 
 
 # debugging zone
@@ -68,4 +68,4 @@ begin
     )
 end
 
-inter_topo_image(filter(x -> x.rows == "A", pattern_detection_values2), evts, erps_fix, timing)
+inter_toposeries_image(filter(x -> x.rows == "A", pattern_detection_values2), evts, erps_fix, timing)

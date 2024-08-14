@@ -1,5 +1,23 @@
-function inter_topo(tmp; positions = positions_128)
-    names = unique(tmp.condition)
+"""
+    inter_toposeries(pattern_detection_values::DataFrame; positions::Vector{Point{2, Float64}} = positions_128)
+
+Plot interactive topoplot series.
+
+## Arguments
+
+- `pattern_detection_values::DataFrame`\\
+    DataFrame with columns condition and estimate. Each condition is resposible for a topoplot. Estimates will be projected across channels. 
+- `kwargs...`\\
+    Additional styling behavior. \\
+
+## Keyword arguments (kwargs)
+- `positions::Vector{Point{2, Float64}} = positions_128` \\
+    Array of topoplot coordinates for channels.
+
+**Return Value:** Interactive `Figure` displaying topoplot series.
+"""
+function inter_toposeries(pattern_detection_values::DataFrame; positions::Vector{Point{2, Float64}} = positions_128)
+    names = unique(pattern_detection_values.condition)
     obs_tuple = Observable((0, 1, 0))
     f = Figure(size = (1500, 800))
     str = @lift(
@@ -27,7 +45,7 @@ function inter_topo(tmp; positions = positions_128)
     hidedecorations!(ax)
     plot_topoplotseries!(
         f[1, 1],
-        tmp;
+        pattern_detection_values;
         mapping = (; col = :condition),
         positions = positions,
         col_labels = true,
@@ -51,7 +69,31 @@ function inter_topo(tmp; positions = positions_128)
     f
 end
 
-function inter_topo_image(pattern_detection_values, evts, erps, time; positions = positions_128)
+"""
+    inter_toposeries_image(pattern_detection_values::DataFrame, events::DataFrame, erps::Array{Float64, 3}, timing; positions::Vector{Point{2, Float64}} = positions_128)
+
+Plot interactive topoplot series and interactive ERP image.
+
+## Arguments
+
+- `pattern_detection_values::DataFrame`\\
+    DataFrame with columns condition and estimate. Each condition is resposible for a topoplot. Estimates will be projected across channels. 
+- `events::DataFrame`\\
+    DataFrame with columns of experimental events and rows with trials. Each value is an event value in a trial.
+- `erps::Array{Float64, 3}`\\
+    3-dimensional Array of voltages of Event-related potentials. Dimensions: channels, time of recording, trials. 
+- `timing::?`\\
+    Timing of recording.
+- `kwargs...`\\
+    Additional styling behavior. \\
+
+## Keyword arguments (kwargs)
+- `positions::Vector{Point{2, Float64}} = positions_128` \\
+    Array of topoplot coordinates for channels.
+
+**Return Value:** Interactive `Figure` displaying topoplot series and interactive ERP image.
+"""
+function inter_toposeries_image(pattern_detection_values::DataFrame, events::DataFrame, erps::Array{Float64, 3}, timing; positions = positions_128)
     cond_names = unique(pattern_detection_values.condition)
     obs_tuple = Observable((0, 1, 1))
     f = Figure()#size = (3000, 1600))
@@ -86,11 +128,11 @@ function inter_topo_image(pattern_detection_values, evts, erps, time; positions 
     )
 
     single_channel_erpimage = @lift(erps[$obs_tuple[3], :, :])
-    sortval = @lift(evts[:, cond_names[$obs_tuple[2]]])
+    sortval = @lift(events[:, cond_names[$obs_tuple[2]]])
    
     str2 = @lift(string(cond_names[$obs_tuple[2]]))
     plot_erpimage!(
-        f[2, 1:5], time,
+        f[2, 1:5], timing,
         single_channel_erpimage;
         sortvalues = sortval,
         show_sortval = true,

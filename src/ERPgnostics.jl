@@ -20,19 +20,20 @@ using WGLMakie, GLMakie
 using Revise
 using ProgressBars
 
-include("heatmap.jl")
-include("topoplots.jl")
-include("mean_filter.jl")
-include("pattern_detection.jl")
-include("pattern_generation.jl")
+include("interactive_heatmap.jl")
+include("interactive_topoplots.jl")
+include("pattern_detection_mean_filter.jl")
+include("pattern_detection_probability.jl")
+include("pattern_simulation.jl")
 
-export inter_topo
-export inter_topo_image
+export inter_toposeries
+export inter_toposeries_image
 
 export inter_heatmap
 export inter_heatmap_image
 
 export mult_chan_pattern_detector_probability
+export mult_chan_pattern_detector_probability_meanfilter
 
-export simulate_alldata
+export simulate_6patterns
 end

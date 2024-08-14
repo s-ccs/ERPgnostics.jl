@@ -7,7 +7,7 @@ begin
     close(fid)
 
     evts_fix = DataFrame(CSV.File("data/events.csv"))
-    data_all, evts = simulate_alldata()
+    data_all, evts = simulate_6patterns()
 end
 
 
@@ -47,7 +47,7 @@ let
         f[end+1, 1],
         data_all;
         sortvalues = evts.duration_linear,
-        axis = (; title = "Abline; sorted by duration_linear"),
+        axis = (; title = "Tilted bar; sorted by duration_linear"),
     )
     f
     #save("assets/patterns.png", f)
@@ -70,7 +70,7 @@ k = 0
 for i in 1:20
     μ  = μ + 0.1
     σ  = σ + 0.1
-    data_all, evts = simulate_alldata(μ, σ)
+    data_all, evts = simulate_6patterns(μ, σ)
     for j in [evts.duration, evts.durationB, evts.Δlatency, evts.condition .== "car", evts.continuous, evts.duration_linear,]
         k = k + 1
         f = Figure(; figure_padding = 0)

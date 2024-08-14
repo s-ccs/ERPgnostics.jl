@@ -4,6 +4,11 @@ evts_mf = CSV.read("data/evts_mf.csv", DataFrame)
 positions_128 = JLD2.load_object("data/positions_128.jld2")
 timing = -0.5:0.001953125:1.0
 
+begin
+    fid = h5open("data/data_fixations.hdf5", "r")
+    erps_fix = read(fid["data"]["data_fixations.hdf5"])
+    close(fid)
+end
 
 begin
     pattern_detection_values = stack(evts_d)
@@ -19,6 +24,11 @@ begin
 end
 
 
-@testset "inter_topo" begin
-    inter_topo(filter(x -> x.rows == "A", pattern_detection_values); positions = positions_128)
+@testset "inter_toposeries" begin
+    inter_toposeries(filter(x -> x.rows == "A", pattern_detection_values); positions = positions_128)
+end
+
+
+@testset "inter_toposeries" begin
+    inter_toposeries_image(filter(x -> x.rows == "A", pattern_detection_values), evts, erps_fix, timing; positions = positions_128)
 end
