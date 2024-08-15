@@ -62,7 +62,11 @@ Plot heatmap and interactive ERP image.
 
 **Return Value:** Interactive `Figure` displaying topoplot series and interactive ERP image.
 """
-function inter_heatmap_image(pattern_detection_values::DataFrame, events::DataFrame, erps::Array{Float64, 3})
+function inter_heatmap_image(
+    pattern_detection_values::DataFrame,
+    events::DataFrame,
+    erps::Array{Float64,3},
+)
     m = Matrix(pattern_detection_values)
     var_i = Observable(1)
     chan_i = Observable(1)

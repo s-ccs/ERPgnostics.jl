@@ -16,7 +16,10 @@ Plot interactive topoplot series.
 
 **Return Value:** Interactive `Figure` displaying topoplot series.
 """
-function inter_toposeries(pattern_detection_values::DataFrame; positions::Vector{Point{2, Float64}} = positions_128)
+function inter_toposeries(
+    pattern_detection_values::DataFrame;
+    positions::Vector{Point{2,Float64}} = positions_128,
+)
     names = unique(pattern_detection_values.condition)
     obs_tuple = Observable((0, 1, 0))
     f = Figure(size = (1500, 800))
@@ -93,7 +96,13 @@ Plot interactive topoplot series and interactive ERP image.
 
 **Return Value:** Interactive `Figure` displaying topoplot series and interactive ERP image.
 """
-function inter_toposeries_image(pattern_detection_values::DataFrame, events::DataFrame, erps::Array{Float64, 3}, timing; positions = positions_128)
+function inter_toposeries_image(
+    pattern_detection_values::DataFrame,
+    events::DataFrame,
+    erps::Array{Float64,3},
+    timing;
+    positions = positions_128,
+)
     cond_names = unique(pattern_detection_values.condition)
     obs_tuple = Observable((0, 1, 1))
     f = Figure()#size = (3000, 1600))
@@ -120,19 +129,27 @@ function inter_toposeries_image(pattern_detection_values::DataFrame, events::Dat
         col_labels = true,
         mapping = (; col = :condition),
         axis = (; xlabel = "Conditions", xlabelvisible = false),
-        visual = (label_scatter = (markersize = 15, strokewidth = 2), contours = (; levels = 0),
-            colormap = Reverse(:RdGy_4)),
+        visual = (
+            label_scatter = (markersize = 15, strokewidth = 2),
+            contours = (; levels = 0),
+            colormap = Reverse(:RdGy_4),
+        ),
         layout = (; use_colorbar = true),
         interactive_scatter = obs_tuple,
-        colorbar = (; label = "Pattern detection function value", colorrange = (0, 1), height = 300),
+        colorbar = (;
+            label = "Pattern detection function value",
+            colorrange = (0, 1),
+            height = 300,
+        ),
     )
 
     single_channel_erpimage = @lift(erps[$obs_tuple[3], :, :])
     sortval = @lift(events[:, cond_names[$obs_tuple[2]]])
-   
+
     str2 = @lift(string(cond_names[$obs_tuple[2]]))
     plot_erpimage!(
-        f[2, 1:5], timing,
+        f[2, 1:5],
+        timing,
         single_channel_erpimage;
         sortvalues = sortval,
         show_sortval = true,

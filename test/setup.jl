@@ -9,7 +9,7 @@ using Statistics, StatsBase, Distributions
 using HDF5, FileIO
 using Printf
 using Images
-using TopoPlots 
+using TopoPlots
 using ImageFiltering
 using ComputationalResources
 using Observables

@@ -25,10 +25,18 @@ end
 
 
 @testset "inter_toposeries" begin
-    inter_toposeries(filter(x -> x.rows == "A", pattern_detection_values); positions = positions_128)
+    inter_toposeries(
+        filter(x -> x.rows == "A", pattern_detection_values);
+        positions = positions_128,
+    )
 end
 
-
 @testset "inter_toposeries" begin
-    inter_toposeries_image(filter(x -> x.rows == "A", pattern_detection_values), evts, erps_fix, timing; positions = positions_128)
+    inter_toposeries_image(
+        filter(x -> x.rows == "A", pattern_detection_values),
+        evts,
+        erps_fix,
+        timing;
+        positions = positions_128,
+    )
 end

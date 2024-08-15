@@ -34,8 +34,7 @@ Simulate linear basis.
 """
 # this is for abline /
 function basis_linear(evts, maxlength)
-    basis =
-        pad_array.(Ref(UnfoldSim.DSP.hanning(50)), Int.(0 .- evts.duration_linear), 0)
+    basis = pad_array.(Ref(UnfoldSim.DSP.hanning(50)), Int.(0 .- evts.duration_linear), 0)
     return basis
 end
 
@@ -70,8 +69,7 @@ function truncate_basisfunction(basis, maxlength)
     difftomax = maxlength .- length.(basis)
     if any(difftomax .< 0)
         @warn "Basis longer than maxlength in at least one case. either increase maxlength or redefine function. Attempt to truncate the basis"
-        basis[difftomax .> 0] =
-            pad_array.(basis[difftomax.>0], difftomax[difftomax.>0], 0)
+        basis[difftomax.>0] = pad_array.(basis[difftomax.>0], difftomax[difftomax.>0], 0)
         basis = [b[1:maxlength] for b in basis]
     else
         basis = pad_array.(basis, difftomax, 0)
