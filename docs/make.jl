@@ -25,12 +25,12 @@ DocMeta.setdocmeta!(ERPgnostics, :DocTestSetup, :(using ERPgnostics); recursive 
 makedocs(;
     modules = [ERPgnostics],
     authors = "Vladimir Mikheev, Benedikt Ehinger",
-    repo = Documenter.Remotes.GitHub("unfoldtoolbox", "ERPgnostics.jl"),
+    repo = Documenter.Remotes.GitHub("s-css", "ERPgnostics.jl"),
     sitename = "ERPgnostics.jl",
     warnonly = :cross_references,
     format = Documenter.HTML(;
         prettyurls = get(ENV, "CI", "false") == "true",
-        canonical = "https://unfoldtoolbox.github.io/ERPgnostics.jl",
+        canonical = "https://s-css.github.io/ERPgnostics.jl",
         assets = String[],
     ),
     pages = [
@@ -40,7 +40,7 @@ makedocs(;
 )
 
 deploydocs(;
-    repo = "github.com/unfoldtoolbox/ERPgnostics.jl",
+    repo = "github.com/s-css/ERPgnostics.jl",
     devbranch = "main",
     versions = "v#.#",
     push_preview = true,
