@@ -113,7 +113,7 @@ function inter_toposeries_image(
         string(cond_names[$obs_tuple[2]])
     )
 
-    ax = GLMakie.Axis(
+    ax = WGLMakie.Axis(
         f[1, 1:5],
         #xautolimitmargin = (0, 0),
         #yautolimitmargin = (0, 0),
