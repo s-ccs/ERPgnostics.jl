@@ -1,11 +1,12 @@
-evts = DataFrame(CSV.File("data/events.csv"))
-evts_d = CSV.read("data/evts_d.csv", DataFrame)
-evts_mf = CSV.read("data/evts_mf.csv", DataFrame)
-positions_128 = JLD2.load_object("data/positions_128.jld2")
+evts = DataFrame(CSV.File("../data/events.csv")) # thuis should be put into soem data giving function
+evts_d = CSV.read("../data/evts_d.csv", DataFrame)
+#evts_mf = CSV.read("../data/evts_mf.csv", DataFrame)
+positions_128 = JLD2.load_object("../data/positions_128.jld2")
 timing = -0.5:0.001953125:1.0
 
+# this should be simulated
 begin
-    fid = h5open("data/data_fixations.hdf5", "r")
+    fid = h5open("../data/data_fixations.hdf5", "r")
     erps_fix = read(fid["data"]["data_fixations.hdf5"])
     close(fid)
 end
