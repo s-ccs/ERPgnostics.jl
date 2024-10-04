@@ -25,7 +25,7 @@ DocMeta.setdocmeta!(ERPgnostics, :DocTestSetup, :(using ERPgnostics); recursive 
 makedocs(;
     modules = [ERPgnostics],
     authors = "Vladimir Mikheev, Benedikt Ehinger",
-    repo = Documenter.Remotes.GitHub("s-css", "ERPgnostics.jl"),
+    repo = Documenter.Remotes.GitHub("s-ccs", "ERPgnostics.jl"),
     sitename = "ERPgnostics.jl",
     warnonly = :cross_references,
     format = Documenter.HTML(;
@@ -40,7 +40,7 @@ makedocs(;
 )
 
 deploydocs(;
-    repo = "github.com/s-css/ERPgnostics.jl",
+    repo = "github.com/s-ccs/ERPgnostics.jl",
     devbranch = "main",
     versions = "v#.#",
     push_preview = true,
