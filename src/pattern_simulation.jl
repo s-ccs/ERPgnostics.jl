@@ -21,7 +21,7 @@ end
 """
     basis_linear(evts, maxlength)
 
-Simulate linear basis.
+Simulate linear basis. Create abline EPR pattern /.
 
 ## Arguments
 
@@ -32,13 +32,25 @@ Simulate linear basis.
 
 **Return Value:** basis. 
 """
-# this is for abline /
 function basis_linear(evts, maxlength)
     basis = pad_array.(Ref(UnfoldSim.DSP.hanning(50)), Int.(0 .- evts.duration_linear), 0)
     return basis
 end
 
-# this is for the asymetrical fan |/
+"""
+    basis_lognormal(evts, maxlength)
+
+Simulate lognormal basis. Creates ERP pattern called asymetrical fan |/.
+
+## Arguments
+
+- `evts::DataFrame`\\
+    tmp
+- `maxlength::DataFrame`\\
+    tmp
+
+**Return Value:** basis. 
+"""
 function basis_lognormal(evts, maxlength)
     basis =
         pdf.(
@@ -49,7 +61,20 @@ function basis_lognormal(evts, maxlength)
     return basis
 end
 
-# this is for the symmetrical fan \/
+"""
+    basis_hanning(evts, maxlength)
+
+Simulate Hanning basis. Creates ERP pattern called symmetrical fan V.
+
+## Arguments
+
+- `evts::DataFrame`\\
+    tmp
+- `maxlength::DataFrame`\\
+    tmp
+
+**Return Value:** basis. 
+"""
 function basis_hanning(evts, maxlength)
     if "durationB" ∈ names(evts)
         fn = "durationB"
@@ -64,11 +89,24 @@ function basis_hanning(evts, maxlength)
     return basis
 end
 
+"""
+    truncate_basisfunction(evts, maxlength)
+
+Check that all bases have maxlength by appending or truncating.
+
+## Arguments
+
+- `evts::DataFrame`\\
+    tmp
+- `maxlength::DataFrame`\\
+    tmp
+
+**Return Value:** basis. 
+"""
 function truncate_basisfunction(basis, maxlength)
-    # we should make sure that all bases have maxlength by appending / truncating
     difftomax = maxlength .- length.(basis)
     if any(difftomax .< 0)
-        @warn "Basis longer than maxlength in at least one case. either increase maxlength or redefine function. Attempt to truncate the basis"
+        @warn "Basis longer than maxlength in at least one case. Either increase maxlength or redefine function. Attempt to truncate the basis"
         basis[difftomax.>0] = pad_array.(basis[difftomax.>0], difftomax[difftomax.>0], 0)
         basis = [b[1:maxlength] for b in basis]
     else

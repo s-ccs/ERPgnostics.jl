@@ -1,7 +1,7 @@
-evts = DataFrame(CSV.File("data/events.csv")) # this should be put into some data giving function
-evts_d = CSV.read("data/evts_d.csv", DataFrame)
+evts = DataFrame(CSV.File("../data/events.csv")) # this should be put into some data giving function
+evts_d = CSV.read("../data/evts_d.csv", DataFrame)
 #evts_mf = CSV.read("../data/evts_mf.csv", DataFrame)
-positions_128 = JLD2.load_object("data/positions_128.jld2")
+positions_128 = JLD2.load_object("../data/positions_128.jld2")
 timing = -0.5:0.001953125:1.0
 
 # this should be simulated

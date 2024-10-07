@@ -1,6 +1,6 @@
 begin
-    events = DataFrame(CSV.File("data/events.csv"))
-    pattern_detection_values = CSV.read("data/evts_d.csv", DataFrame)
+    events = DataFrame(CSV.File("../data/events.csv"))
+    pattern_detection_values = CSV.read("../data/evts_d.csv", DataFrame)
 end
 
 @testset "inter_heatmap" begin
