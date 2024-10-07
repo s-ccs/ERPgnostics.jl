@@ -75,7 +75,9 @@ end
 """
     inter_toposeries_image(pattern_detection_values::DataFrame, events::DataFrame, erps::Array{Float64, 3}, timing; positions::Vector{Point{2, Float64}} = positions_128)
 
-Plot interactive topoplot series and interactive ERP image.
+Plot interactive topoplot series and interactive ERP image.\\
+ERP image will have trials on y-axis and time on x-axis
+
 
 ## Arguments
 
