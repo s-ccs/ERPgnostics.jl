@@ -1,6 +1,6 @@
 begin
     using Pkg
-    stub = "/store/users/mikheev/projects/erpgnostics_dev/dev/ERPgnostics"
+    stub = pwd()
     Pkg.activate(stub)
     using Revise
     Revise.retry()
