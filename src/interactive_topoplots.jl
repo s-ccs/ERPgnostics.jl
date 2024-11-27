@@ -20,20 +20,18 @@ function inter_toposeries(
     pattern_detection_values::DataFrame;
     positions::Vector{Point{2,Float64}} = positions_128,
 )
+
     names = unique(pattern_detection_values.condition)
-    obs_tuple = Observable((0, 1, 0))
-    f = Figure(size = (1500, 800))
+    obs_tuple = Observable((0, 1, 1)) # row, col, channel
+    f = Makie.Figure(size = (1500, 400))
     str = @lift(
         "Interactive topoplots: channel - " *
         string($obs_tuple[3]) *
         ", variable - " *
         string(names[$obs_tuple[2]])
     )
-
-    ax = WGLMakie.Axis(
+    ax = GLMakie.Axis(
         f[1, 1],
-        xautolimitmargin = (0, 0),
-        yautolimitmargin = (0, 0),
         title = str,
         xlabel = "Channels",
         ylabel = "Index of event variable",
@@ -44,6 +42,11 @@ function inter_toposeries(
         xrectzoom = false,
         yrectzoom = false,
     )
+
+    on(events(f).mousebutton, priority = 1) do event
+        if event.button == Mouse.left && event.action == Mouse.press
+        end
+    end
     hidespines!(ax)
     hidedecorations!(ax)
     plot_topoplotseries!(
@@ -51,25 +54,13 @@ function inter_toposeries(
         pattern_detection_values;
         mapping = (; col = :condition),
         positions = positions,
-        col_labels = true,
         interactive_scatter = obs_tuple,
-        visual = (label_scatter = (markersize = 15, strokewidth = 2),),
+        visual = (label_scatter = (markersize = 10, strokewidth = 2),),
         layout = (; use_colorbar = true),
-        axis = (;
-            xpanlock = true,
-            ypanlock = true,
-            xzoomlock = true,
-            yzoomlock = true,
-            xrectzoom = false,
-            yrectzoom = false,
-        ),
     )
 
-    on(events(f).mousebutton, priority = 1) do event
-        if event.button == Mouse.left && event.action == Mouse.press
-        end
-    end
     f
+
 end
 
 """
@@ -99,15 +90,16 @@ ERP image will have trials on y-axis and time on x-axis
 **Return Value:** Interactive `Figure` displaying topoplot series and interactive ERP image.
 """
 function inter_toposeries_image(
-    pattern_detection_values::DataFrame,
-    events::DataFrame,
-    erps::Array{Float64,3},
+    pattern_detection_values,
+    events,
+    erps, #::Array{Float64,3},
     timing;
     positions = positions_128,
 )
+
     cond_names = unique(pattern_detection_values.condition)
     obs_tuple = Observable((0, 1, 1))
-    f = Figure()#size = (3000, 1600))
+    f = Figure() #size = (3000, 1600))
     str = @lift(
         "Entropy topoplots: channel - " *
         string($obs_tuple[3]) *
@@ -115,15 +107,10 @@ function inter_toposeries_image(
         string(cond_names[$obs_tuple[2]])
     )
 
-    ax = WGLMakie.Axis(
-        f[1, 1:5],
-        #xautolimitmargin = (0, 0),
-        #yautolimitmargin = (0, 0),
-        xlabelvisible = false,
-        title = str,
-    )
+    ax = WGLMakie.Axis(f[1, 1:5], xlabelvisible = false, title = str)
     hidespines!(ax)
     hidedecorations!(ax)
+
     plot_topoplotseries!(
         f[1, 1:5],
         pattern_detection_values;
@@ -132,11 +119,10 @@ function inter_toposeries_image(
         mapping = (; col = :condition),
         axis = (; xlabel = "Conditions", xlabelvisible = false),
         visual = (
-            label_scatter = (markersize = 15, strokewidth = 2),
+            label_scatter = (markersize = 10, strokewidth = 2),
             contours = (; levels = 0),
             colormap = Reverse(:RdGy_4),
         ),
-        layout = (; use_colorbar = true),
         interactive_scatter = obs_tuple,
         colorbar = (;
             label = "Pattern detection function value",
@@ -160,9 +146,9 @@ function inter_toposeries_image(
         axis = (; title = "ERP image"),
     )
 
-    on(events(f).mousebutton, priority = 1) do event
+    #= on(events(f).mousebutton, priority = 1) do event
         if event.button == Mouse.left && event.action == Mouse.press
         end
-    end
+    end  =#
     f
 end
