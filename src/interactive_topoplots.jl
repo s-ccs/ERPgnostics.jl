@@ -30,7 +30,7 @@ function inter_toposeries(
         ", variable - " *
         string(names[$obs_tuple[2]])
     )
-    ax = GLMakie.Axis(
+    ax = Makie.Axis(
         f[1, 1],
         title = str,
         xlabel = "Channels",
@@ -107,7 +107,7 @@ function inter_toposeries_image(
         string(cond_names[$obs_tuple[2]])
     )
 
-    ax = WGLMakie.Axis(f[1, 1:5], xlabelvisible = false, title = str)
+    ax = Makie.Axis(f[1, 1:5], xlabelvisible = false, title = str)
     hidespines!(ax)
     hidedecorations!(ax)
 
