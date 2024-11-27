@@ -17,7 +17,6 @@ using Observables
 using DSP
 using JLD2
 using WGLMakie
-using GLMakie
 using Revise
 using ProgressBars
 
