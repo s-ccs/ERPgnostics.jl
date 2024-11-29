@@ -24,5 +24,4 @@ UnfoldSim = "ed8ae6d2-84d3-44c6-ab46-0baf21700804"
 [compat]
 DSP = "0.7"
 JLD2 = "0.5"
-Makie = "0.20, 0.21, 0.22"
 TopoPlots = "0.2"
