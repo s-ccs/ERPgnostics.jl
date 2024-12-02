@@ -3,6 +3,7 @@ using DataFrames
 using UnfoldMakie
 using JLD2
 using ERPgnostics
+CairoMakie.activate!()
 
 # Data input
 path = dirname(dirname(Base.current_project()))
