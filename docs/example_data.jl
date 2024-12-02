@@ -18,7 +18,7 @@ Datasets:
 """
 function example_data(example = "pattern_detection_values")
     if example == "pattern_detection_values"
-        evts_d = CSV.read("../../../data/evts_d.csv", DataFrame)
+        evts_d = CSV.read("../data/evts_d.csv", DataFrame)
         pattern_detection_values = stack(evts_d)
         pattern_detection_values.timing = 1:nrow(pattern_detection_values)
         pattern_detection_values.label = 1:nrow(pattern_detection_values)
