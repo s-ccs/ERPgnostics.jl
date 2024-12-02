@@ -1,3 +1,5 @@
+using WGLMakie: activate!
+include("../docs/example_data.jl")
 evts = DataFrame(CSV.File("../data/events.csv")) # this should be put into some data giving function
 evts_d = CSV.read("../data/evts_d.csv", DataFrame)
 #evts_mf = CSV.read("../data/evts_mf.csv", DataFrame)
@@ -11,34 +13,10 @@ timing = -0.5:0.001953125:1.0
     close(fid)
 end =#
 
-begin
-    pattern_detection_values = stack(evts_d)
-    pattern_detection_values.timing = 1:nrow(pattern_detection_values)
-    pattern_detection_values.label = 1:nrow(pattern_detection_values)
-    rename!(pattern_detection_values, :variable => :condition, :value => :estimate)
-    pattern_detection_values.rows = vcat(
-        repeat(["A"], size(pattern_detection_values, 1) ÷ 4),
-        repeat(["B"], size(pattern_detection_values, 1) ÷ 4),
-        repeat(["C"], size(pattern_detection_values, 1) ÷ 4),
-        repeat(["D"], size(pattern_detection_values, 1) ÷ 4),
-    )
-end
-
-
 @testset "inter_toposeries" begin
+    desired_conditions = ["duration", "fix_avgpos_x", "fix_avgpos_y", "fix_avgpupilsize"]
     inter_toposeries(
-        filter(x -> x.rows == "A", pattern_detection_values);
+        filter(row -> row.condition in desired_conditions, pattern_detection_values);
         positions = positions_128,
     )
 end
-
-#= @testset "inter_toposeries" begin
-    inter_toposeries_image(
-        filter(x -> x.rows == "A", pattern_detection_values),
-        evts,
-        erps_fix,
-        timing;
-        positions = positions_128,
-    )
-end
- =#
