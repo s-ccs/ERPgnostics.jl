@@ -24,5 +24,5 @@ inter_toposeries(
     pattern_detection_values;
     positions = positions_128,
     toposeries_configs = (; nrows = 4),
-    figure_configs = (; size = (1500, 1200))
+    figure_configs = (; size = (1500, 1200)),
 )
