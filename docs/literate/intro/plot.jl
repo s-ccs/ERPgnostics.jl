@@ -4,9 +4,10 @@ using UnfoldMakie
 using JLD2
 
 # Data input
-include("../../../example_data.jl")
+path = dirname(dirname(Base.current_project()))
+include(path * "/docs/example_data.jl")
 
-positions_128 = JLD2.load_object("../../../../data/positions_128.jld2")
+positions_128 = JLD2.load_object(path * "/data/positions_128.jld2")
 pattern_detection_values = example_data()
 
 # Example of interactive topoplot series
