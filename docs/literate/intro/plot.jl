@@ -18,3 +18,11 @@ inter_toposeries(
     filter(x -> x.rows == "A", pattern_detection_values);
     positions = positions_128,
 )
+
+
+inter_toposeries(
+    pattern_detection_values;
+    positions = positions_128,
+    toposeries_configs = (; nrows = 4),
+    figure_configs = (; size = (1500, 1200))
+)

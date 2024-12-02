@@ -19,11 +19,13 @@ Plot interactive topoplot series.
 function inter_toposeries(
     pattern_detection_values::DataFrame;
     positions::Vector{Point{2,Float64}} = positions_128,
+    figure_configs = (; size = (800, 400)),
+    toposeries_configs = (; nrows = 1,),
 )
 
     names = unique(pattern_detection_values.condition)
     obs_tuple = Observable((0, 1, 1)) # row, col, channel
-    f = Makie.Figure(size = (1500, 400))
+    f = Makie.Figure(; figure_configs...)
     str = @lift(
         "Interactive topoplots: channel - " *
         string($obs_tuple[3]) *
@@ -49,14 +51,16 @@ function inter_toposeries(
     end
     hidespines!(ax)
     hidedecorations!(ax)
-    plot_topoplotseries!(
+    plot_topoplotseries!( # make configurable
         f[1, 1],
         pattern_detection_values;
         mapping = (; col = :condition),
         positions = positions,
+        nrows = nrows,
         interactive_scatter = obs_tuple,
         visual = (label_scatter = (markersize = 10, strokewidth = 2),),
         layout = (; use_colorbar = true),
+        toposeries_configs...,
     )
 
     f
