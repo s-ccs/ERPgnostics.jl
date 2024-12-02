@@ -21,7 +21,6 @@ function example_data(example = "pattern_detection_values")
         datapath = dirname(dirname(Base.current_project())) * "/data/evts_d.csv"
         evts_d = CSV.read(datapath, DataFrame)
         pattern_detection_values = stack(evts_d)
-  
         rename!(pattern_detection_values, :variable => :condition, :value => :estimate)
         evts_d = nothing
         return pattern_detection_values
