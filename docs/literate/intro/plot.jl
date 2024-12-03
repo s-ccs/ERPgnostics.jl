@@ -12,8 +12,7 @@ include(path * "/docs/example_data.jl")
 positions_128 = JLD2.load_object(path * "/data/positions_128.jld2")
 pattern_detection_values = example_data();
 
-# Example of interactive topoplot series
-
+# Interactive topoplot series with one row
 
 desired_conditions = ["duration", "fix_avgpos_x", "fix_avgpos_y", "fix_avgpupilsize"]
 inter_toposeries(
@@ -21,7 +20,7 @@ inter_toposeries(
     positions = positions_128,
 )
 
-
+# Interactive topoplot series with multiple rows
 inter_toposeries(
     pattern_detection_values;
     positions = positions_128,

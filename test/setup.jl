@@ -20,6 +20,6 @@ using Revise
 using ProgressBars
 
 using Test
+path = dirname(Base.current_project())
+include(path * "/docs/example_data.jl")
 #include("../docs/example_data.jl")
-
-#raw_ch_names = example_data("raw_ch_names")
