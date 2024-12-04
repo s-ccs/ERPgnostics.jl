@@ -1,3 +1,4 @@
+evts = DataFrame(CSV.File("../data/events.csv"))
 positions_128 = JLD2.load_object("../data/positions_128.jld2")
 erps_fix_32 = JLD2.load_object("../data/erps_fix_32.jld2")
 timing = -0.5:0.001953125:1.0
@@ -32,3 +33,4 @@ end
         figure_configs = (; size = (1500, 700)),
     )
 end
+

@@ -8,7 +8,7 @@ CairoMakie.activate!()
 # Data input
 path = dirname(dirname(Base.current_project()))
 include(path * "/docs/example_data.jl")
-
+evts = DataFrame(CSV.File(path * "/data/events.csv"))
 positions_128 = JLD2.load_object(path * "/data/positions_128.jld2")
 erps_fix_32 = JLD2.load_object(path * "/data/erps_fix_32.jld2")
 pattern_detection_values_32 = example_data("pattern_detection_values_32");
