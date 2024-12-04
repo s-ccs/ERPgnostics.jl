@@ -16,10 +16,10 @@ desired_conditions = ["duration", "fix_avgpos_x", "fix_avgpos_y", "fix_avgpupils
 
 
 inter_toposeries_image(
-        filter(row -> row.condition in desired_conditions, pattern_detection_values_32),
-        evts,
-        erps_fix_32,
-        1:151;
-        positions = positions_128[1:32],
-        figure_configs = (; size = (1500, 700)),
-    )
+    filter(row -> row.condition in desired_conditions, pattern_detection_values_32),
+    evts,
+    erps_fix_32,
+    1:151;
+    positions = positions_128[1:32],
+    figure_configs = (; size = (1500, 700)),
+)
