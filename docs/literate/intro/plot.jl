@@ -1,3 +1,9 @@
+# # Interactive topoplots
+
+# These topoplots series are different: instead fo voltage they represent pattern detection value (here - entropy) for different sorting variables.
+
+# By clicking on the markers you can see the channel name and sorted variabel in title.
+
 using CairoMakie
 using DataFrames
 using UnfoldMakie

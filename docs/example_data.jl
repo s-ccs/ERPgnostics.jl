@@ -7,7 +7,7 @@ using CSV
 """
     example_data(String) 
 
-Creates example data or model. Currently, 1 dataset is available.
+Creates example data. Currently, 1 dataset is available.
 
 Datasets:
 - `pattern_detection_values` (default) - Dataframe with 2 fields:\\
