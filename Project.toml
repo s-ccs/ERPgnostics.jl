@@ -36,7 +36,12 @@ UnfoldSim = "ed8ae6d2-84d3-44c6-ab46-0baf21700804"
 WGLMakie = "276b4fcb-3e11-5398-bf8b-a0c2d153d008"
 
 [compat]
+CairoMakie = "0.12"
+FileIO = "1"
 DSP = "0.7"
 JLD2 = "0.5"
 Makie = "0.20, 0.21, 0.22"
 TopoPlots = "0.2"
+Images = "0.26"
+UnfoldSim = "0.3"
+UnfoldMakie = "0.5"
