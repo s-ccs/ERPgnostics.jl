@@ -21,5 +21,5 @@ using ProgressBars
 
 using Test
 path = dirname(Base.current_project())
-include(path * "/docs/example_data.jl", mode = 2)
+include(path * "/docs/example_data.jl")
 #include("../docs/example_data.jl")

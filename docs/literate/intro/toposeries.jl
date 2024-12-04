@@ -33,3 +33,4 @@ inter_toposeries(
     toposeries_configs = (; nrows = 4),
     figure_configs = (; size = (1500, 1200)),
 )
+
