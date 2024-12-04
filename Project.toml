@@ -36,6 +36,7 @@ UnfoldSim = "ed8ae6d2-84d3-44c6-ab46-0baf21700804"
 WGLMakie = "276b4fcb-3e11-5398-bf8b-a0c2d153d008"
 
 [compat]
+ImageFiltering = "0.7"
 BenchmarkTools = "1"
 CSV = "0.10"
 StatsBase = "0.34"
