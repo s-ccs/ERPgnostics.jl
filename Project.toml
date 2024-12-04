@@ -38,6 +38,7 @@ WGLMakie = "276b4fcb-3e11-5398-bf8b-a0c2d153d008"
 [compat]
 Unfold = "0.7"
 DSP = "0.7"
+JuliaFormatter = "2"
 Makie = "0.21"
 TopoPlots = "0.2"
 
