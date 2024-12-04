@@ -1,7 +1,7 @@
 """
     inter_heatmap(pattern_detection_values::DataFrame)
 
-Plot interactive heatmap.
+Plot interactive heatmap with channels on x-axis and index of event variable on y-axis.
 
 ## Arguments
 
@@ -47,7 +47,9 @@ end
 """
     inter_heatmap_image(pattern_detection_values::DataFrame, events::DataFrame, erps::Array{Float64, 3})
 
-Plot heatmap and interactive ERP image.
+Plot heatmap and interactive ERP image.\\
+Heatmap will have channels on x-axis and index of event variable on y-axis.\\
+ERP image will have trials on y-axis and time on x-axis
 
 ## Arguments
 
