@@ -36,8 +36,8 @@ function inter_heatmap(pattern_detection_values::DataFrame)
         if event.button == Mouse.left && event.action == Mouse.press
             plot, _ = pick(ax.scene)
             a = DataInspector(plot)
-            pos = Makie.position_on_plot(plot, -1, apply_transform = false)[Vec(1, 2)]
-            b = Makie._pixelated_getindex(plot[1][], plot[2][], plot[3][], pos, true)
+            pos = WGLMakie.position_on_plot(plot, -1, apply_transform = false)[Vec(1, 2)]
+            b = WGLMakie._pixelated_getindex(plot[1][], plot[2][], plot[3][], pos, true)
             chan_i[], var_i[] = b[1], b[2]
         end
     end
@@ -118,8 +118,8 @@ function inter_heatmap_image(
     on(events(f).mousebutton, priority = 1) do event
         if event.button == Mouse.left && event.action == Mouse.press
             plot, _ = pick(ax.scene)
-            pos = Makie.position_on_plot(plot, -1, apply_transform = false)[Vec(1, 2)]
-            b = Makie._pixelated_getindex(plot[1][], plot[2][], plot[3][], pos, true)
+            pos = WGLMakie.position_on_plot(plot, -1, apply_transform = false)[Vec(1, 2)]
+            b = WGLMakie._pixelated_getindex(plot[1][], plot[2][], plot[3][], pos, true)
             chan_i[], var_i[] = b[1], b[2]
             #a = DataInspector(plot)
         end

@@ -34,7 +34,9 @@ makedocs(;
         assets = String[],
     ),
     pages = [
-        "ERPgnostics Documentation" => "index.md",
+        "ERPgnostics highlights" => "index.md",
+        "Plotting" => "generated/intro/toposeries.md",
+        "Diagnostics" => "generated/intro/gnostics.md",
         "API / DocStrings" => "api.md",
     ],
 )
