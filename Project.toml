@@ -36,6 +36,7 @@ UnfoldSim = "ed8ae6d2-84d3-44c6-ab46-0baf21700804"
 WGLMakie = "276b4fcb-3e11-5398-bf8b-a0c2d153d008"
 
 [compat]
+WGLMakie = "0.10"
 ProgressBars = "1"
 Distributions = "0.25"
 Revise = "3"
