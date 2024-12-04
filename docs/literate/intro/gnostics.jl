@@ -10,8 +10,8 @@ path = dirname(dirname(Base.current_project()))
 include(path * "/docs/example_data.jl")
 
 positions_128 = JLD2.load_object(path * "/data/positions_128.jld2")
-erps_fix_32 = JLD2.load_object("../data/erps_fix_32.jld2")
-pattern_detection_values_32 = example_data("../data/pattern_detection_values_32");
+erps_fix_32 = JLD2.load_object(path * "/data/erps_fix_32.jld2")
+pattern_detection_values_32 = example_data("pattern_detection_values_32");
 desired_conditions = ["duration", "fix_avgpos_x", "fix_avgpos_y", "fix_avgpupilsize"]
 
 # Plotting
