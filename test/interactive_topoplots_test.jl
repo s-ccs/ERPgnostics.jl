@@ -15,16 +15,6 @@ end
 
 @testset "inter_toposeries" begin
     inter_toposeries_image(
-        filter(row -> row.condition in desired_conditions, pattern_detection_values),
-        evts,
-        erps_fix,
-        timing;
-        positions = positions_128,
-    )
-end
-
-@testset "inter_toposeries" begin
-    inter_toposeries_image(
         filter(row -> row.condition in desired_conditions, pattern_detection_values_32),
         evts,
         erps_fix_32,
@@ -33,4 +23,3 @@ end
         figure_configs = (; size = (1500, 700)),
     )
 end
-
