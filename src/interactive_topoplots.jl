@@ -19,7 +19,7 @@ Plot interactive topoplot series.
 function inter_toposeries(
     pattern_detection_values::DataFrame;
     positions::Vector{Point{2,Float64}} = positions_128,
-    figure_configs = (; size = (800, 400)),
+    figure_configs = (; size = (1500, 400)),
     toposeries_configs = (; nrows = 1,),
 )
 
@@ -83,7 +83,7 @@ ERP image will have trials on y-axis and time on x-axis
 - `erps::Array{Float64, 3}`\\
     3-dimensional Array of voltages of Event-related potentials. Dimensions: channels, time of recording, trials. 
 - `timing::?`\\
-    Timing of recording.
+    Timing of recording. Should be similar to y-value of erps. 
 - `kwargs...`\\
     Additional styling behavior. \\
 
@@ -98,12 +98,13 @@ function inter_toposeries_image(
     events,
     erps, #::Array{Float64,3},
     timing;
+    figure_configs = (; size = (1500, 400)),
     positions = positions_128,
 )
 
     cond_names = unique(pattern_detection_values.condition)
     obs_tuple = Observable((0, 1, 1))
-    f = Figure() #size = (3000, 1600))
+    f = Makie.Figure(; figure_configs...)
     str = @lift(
         "Entropy topoplots: channel - " *
         string($obs_tuple[3]) *
