@@ -1,4 +1,3 @@
-using ERPgnostics
 include("setup.jl")
 
 @testset "Simulations" begin
@@ -12,4 +11,3 @@ end
 @testset "Interactive heatmap" begin
     include("interactive_heatmap_test.jl")
 end
-
