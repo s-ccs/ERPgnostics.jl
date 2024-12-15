@@ -7,6 +7,13 @@ Plot interactive topoplot series.
 
 - `pattern_detection_values::DataFrame`\\
     DataFrame with columns condition and estimate. Each condition is resposible for a topoplot. Estimates will be projected across channels. 
+- `figure_configs::NamedTuple = (;)`\\
+    Here you can flexibly change configurations of the Figure axis.\\
+    To see all options just type `?Figure` in REPL.\\
+- `toposeries_configs::NamedTuple  = (;)`\\
+    Here you can flexibly change configurations of the topoplot series.\\
+    To see all options just type `?plot_topoplotseries` in REPL.\\
+    Defaults: $(supportive_defaults(:toposeries_default))
 - `kwargs...`\\
     Additional styling behavior. \\
 
@@ -20,7 +27,7 @@ function inter_toposeries(
     pattern_detection_values::DataFrame;
     positions::Vector{Point{2,Float64}} = positions_128,
     figure_configs = (; size = (1500, 400)),
-    toposeries_configs = (; nrows = 1,),
+    toposeries_configs = (;),
 )
 
     names = unique(pattern_detection_values.condition)
@@ -51,15 +58,14 @@ function inter_toposeries(
     end
     hidespines!(ax)
     hidedecorations!(ax)
+
+    toposeries_configs =
+        update_axis(supportive_defaults(:toposeries_default); toposeries_configs...)
     plot_topoplotseries!( # make configurable
         f[1, 1],
         pattern_detection_values;
-        mapping = (; col = :condition),
         positions = positions,
-        nrows = nrows,
         interactive_scatter = obs_tuple,
-        visual = (label_scatter = (markersize = 10, strokewidth = 2),),
-        layout = (; use_colorbar = true),
         toposeries_configs...,
     )
 
@@ -84,6 +90,17 @@ ERP image will have trials on y-axis and time on x-axis
     3-dimensional Array of voltages of Event-related potentials. Dimensions: channels, time of recording, trials. 
 - `timing::?`\\
     Timing of recording. Should be similar to y-value of erps. 
+- `figure_configs::NamedTuple = (;)`\\
+    Here you can flexibly change configurations of the Figure axis.\\
+    To see all options just type `?Figure` in REPL.\\
+- `toposeries_configs::NamedTuple  = (;)`\\
+    Here you can flexibly change configurations of the topoplot series.\\
+    To see all options just type `?plot_topoplotseries` in REPL.\\
+    Defaults: $(supportive_defaults(:toposeries_default))
+- `erpimage_configs::NamedTuple  = (;)`\\
+    Here you can flexibly change configurations of the ERP image plot.\\
+    To see all options just type `?plot_erpimage` in REPL.\\
+    Defaults: $(supportive_defaults(:erpimage_defaults))
 - `kwargs...`\\
     Additional styling behavior. \\
 
@@ -98,8 +115,10 @@ function inter_toposeries_image(
     events,
     erps, #::Array{Float64,3},
     timing;
-    figure_configs = (; size = (1500, 400)),
     positions = positions_128,
+    figure_configs = (; size = (1500, 400)),
+    toposeries_configs = (;),
+    erpimage_configs = (;),
 )
 
     cond_names = unique(pattern_detection_values.condition)
@@ -116,24 +135,17 @@ function inter_toposeries_image(
     hidespines!(ax)
     hidedecorations!(ax)
 
+    toposeries_configs =
+        update_axis(supportive_defaults(:toposeries_default); toposeries_configs...)
+    erpimage_configs =
+        update_axis(supportive_defaults(:erpimage_defaults); erpimage_configs...)
+
     plot_topoplotseries!(
         f[1, 1:5],
         pattern_detection_values;
         positions = positions,
-        col_labels = true,
-        mapping = (; col = :condition),
-        axis = (; xlabel = "Conditions", xlabelvisible = false),
-        visual = (
-            label_scatter = (markersize = 10, strokewidth = 2),
-            contours = (; levels = 0),
-            colormap = Reverse(:RdGy_4),
-        ),
         interactive_scatter = obs_tuple,
-        colorbar = (;
-            label = "Pattern detection function value",
-            colorrange = (0, 1),
-            height = 300,
-        ),
+        toposeries_configs...,
     )
 
     single_channel_erpimage = @lift(erps[$obs_tuple[3], :, :])
@@ -145,10 +157,8 @@ function inter_toposeries_image(
         timing,
         single_channel_erpimage;
         sortvalues = sortval,
-        show_sortval = true,
-        meanplot = true,
         sortval_xlabel = str2,
-        axis = (; title = "ERP image"),
+        erpimage_configs...,
     )
 
     #= on(events(f).mousebutton, priority = 1) do event

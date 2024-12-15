@@ -20,6 +20,7 @@ using WGLMakie
 using Revise
 using ProgressBars
 
+include("configs.jl")
 include("interactive_heatmap.jl")
 include("interactive_topoplots.jl")
 include("pattern_detection.jl")

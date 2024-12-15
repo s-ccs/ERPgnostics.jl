@@ -13,7 +13,7 @@ desired_conditions = ["duration", "fix_avgpos_x", "fix_avgpos_y", "fix_avgpupils
     )
 end
 
-@testset "inter_toposeries" begin
+@testset "inter_toposeries_image" begin
     inter_toposeries_image(
         filter(row -> row.condition in desired_conditions, pattern_detection_values_32),
         evts,
@@ -21,5 +21,17 @@ end
         1:151;
         positions = positions_128[1:32],
         figure_configs = (; size = (1500, 700)),
+    )
+end
+
+@testset "inter_toposeries_image: toposeries_config" begin
+    inter_toposeries_image(
+        filter(row -> row.condition in desired_conditions, pattern_detection_values_32),
+        evts,
+        erps_fix_32,
+        1:151;
+        positions = positions_128[1:32],
+        figure_configs = (; size = (1500, 700)),
+        toposeries_configs = (; colorbar = (; label = "test")),
     )
 end
