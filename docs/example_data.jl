@@ -28,7 +28,7 @@ function example_data(example = "pattern_detection_values"; mode = 1)
         pattern_detection_values = stack(evts_d)
         rename!(pattern_detection_values, :variable => :condition, :value => :estimate)
         evts_d = nothing
-        return pattern_detection_value
+        return pattern_detection_values
     elseif example == "pattern_detection_values_32"
         pattern_detection_values = stack(evts_d[1:32, :])
         rename!(pattern_detection_values, :variable => :condition, :value => :estimate)
