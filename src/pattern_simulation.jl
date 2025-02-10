@@ -130,7 +130,7 @@ Columns in resulting sim\\_6patterns Data Frame to simulate this patterns: Δlat
 - `σ::Float = 3.2`\\
     Controls standart deviation.
 
-**Return Value:** sim\\_6patterns::Matrix{Float64} with voltages and sim_evts::DataFrame with events. 
+**Return Value:** `sim\\_6patterns::Matrix{Float64}` with voltages and `sim_evts::DataFrame` with events. 
 """
 function simulate_6patterns(μ = 3.2, σ = 0.5; tmp = nothing)
     design = SingleSubjectDesign(;

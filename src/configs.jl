@@ -5,7 +5,7 @@
 Default configurations for the supporting axis. Similar to PlotConfig, but these configurations are not shared by all plots.\\
 Such supporting axes allow users to flexibly see defaults in docstrings and manipulate them using corresponding axes.
     
-For developers: to make them updateable in the function, use `update_axis`.
+For developers: to make them updateable in the function, use `update_axis`.\\
 **Return value:** `NamedTuple`.
 """
 function supportive_defaults(cfg_symb::Symbol)
