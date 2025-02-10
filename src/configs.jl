@@ -20,10 +20,7 @@ function supportive_defaults(cfg_symb::Symbol)
                 contours = (; levels = 0),
                 colormap = Reverse(:RdGy_4),
             ),
-            colorbar = (;
-                label = "Pattern detection function value",
-                height = 300,
-            ),
+            colorbar = (; label = "Pattern detection function value", height = 300),
             layout = (; use_colorbar = true),
         )
     elseif cfg_symb == :erpimage_defaults
