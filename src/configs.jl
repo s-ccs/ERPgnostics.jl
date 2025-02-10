@@ -22,7 +22,6 @@ function supportive_defaults(cfg_symb::Symbol)
             ),
             colorbar = (;
                 label = "Pattern detection function value",
-                colorrange = (0, 1),
                 height = 300,
             ),
             layout = (; use_colorbar = true),

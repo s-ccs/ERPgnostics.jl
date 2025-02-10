@@ -22,14 +22,14 @@ function example_data(example = "pattern_detection_values"; mode = 1)
     else
         datapath = dirname(Base.current_project()) * "/data/evts_d.csv"
     end
+    evts_d = CSV.read(datapath, DataFrame)
+    evts_d.channel = 1:nrow(evts_d)
     if example == "pattern_detection_values"
-        evts_d = CSV.read(datapath, DataFrame)
         pattern_detection_values = stack(evts_d)
         rename!(pattern_detection_values, :variable => :condition, :value => :estimate)
         evts_d = nothing
-        return pattern_detection_values
+        return pattern_detection_value
     elseif example == "pattern_detection_values_32"
-        evts_d = CSV.read(datapath, DataFrame)
         pattern_detection_values = stack(evts_d[1:32, :])
         rename!(pattern_detection_values, :variable => :condition, :value => :estimate)
         evts_d = nothing

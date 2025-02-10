@@ -7,15 +7,20 @@ pattern_detection_values_32 = example_data("pattern_detection_values_32"; mode =
 desired_conditions = ["duration", "fix_avgpos_x", "fix_avgpos_y", "fix_avgpupilsize"]
 
 @testset "inter_toposeries" begin
-    inter_toposeries(
-        filter(row -> row.condition in desired_conditions, pattern_detection_values);
+    filtered_data = filter(row -> row.condition in desired_conditions, pattern_detection_values)
+    plot_topoplotseries(
+        filtered_data;
+        nrows = 2,
         positions = positions_128,
-    )
+        mapping = (; col = :condition),
+)
 end
 
 @testset "inter_toposeries_image" begin
+    filtered_data = filter(row -> row.condition in desired_conditions, pattern_detection_values_32)
+
     inter_toposeries_image(
-        filter(row -> row.condition in desired_conditions, pattern_detection_values_32),
+        filtered_data,
         evts,
         erps_fix_32,
         1:151;
@@ -25,8 +30,10 @@ end
 end
 
 @testset "inter_toposeries_image: toposeries_config" begin
+    filtered_data = filter(row -> row.condition in desired_conditions, pattern_detection_values_32)
+
     inter_toposeries_image(
-        filter(row -> row.condition in desired_conditions, pattern_detection_values_32),
+        filtered_data,
         evts,
         erps_fix_32,
         1:151;

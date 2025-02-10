@@ -143,6 +143,7 @@ function inter_toposeries_image(
     plot_topoplotseries!(
         f[1, 1:5],
         pattern_detection_values;
+        mapping = (; col = :condition),
         positions = positions,
         interactive_scatter = obs_tuple,
         toposeries_configs...,
