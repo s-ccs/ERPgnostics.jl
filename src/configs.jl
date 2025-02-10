@@ -13,7 +13,6 @@ function supportive_defaults(cfg_symb::Symbol)
     if cfg_symb == :toposeries_default
         return (;
             nrows = 1,
-            col_labels = true,
             mapping = (; col = :condition),
             axis = (; xlabel = "Conditions", xlabelvisible = false),
             visual = (
