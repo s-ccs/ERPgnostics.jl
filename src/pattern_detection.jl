@@ -7,23 +7,23 @@ For instance, single EEG channel (sensor) with trials over time.\\
 Method:\\
 - Filter dataset for smearing.\\
 - Use pattern detection function.\\
-- In "plot" mode returns an ERP image with a value of pattern detection. Otherwise - only value.
+- In `mode = "plot"` returns an ERP image with a value of pattern detection. Otherwise - only value.
 
 ## Arguments
 
-- erp_data::Matrix{Float64}`\\
+- `erp_data::Matrix{Float64}`\\
     3-dimensional array of voltages of event-related potentials. Dimensions: channels, recording time, trials. 
-- detector::Function`\\
+- `detector::Function`\\
     Function used for pattern detection.\\
     For example, `Images.entropy` from `Images.jl`.
-- filter::Function`\\
+- `filter::Function`\\
     Function used for smearing.\\
 
 ## Keyword arguments (kwargs)
-- mode::String = "plot"` \\
+- `mode::String = "plot"` \\
     Plot an ERP image with the pattern detection value.
 
-**Return Value:** (Figure with) pattern detection value.
+**Return Value:** (`Figure` with) pattern detection value.
 """
 function pattern_detector(
     erp_data::Matrix{Float64},
@@ -64,17 +64,17 @@ Mode of permuted means:\\
 
 - `erp_data::Array{Float64, 3}`\\
     3-dimensional Array of voltages of Event-related potentials. Dimensions: time of recording, trials, channels. 
-- detector::Function`\\
+- `detector::Function`\\
     Function used for pattern detection.\\
     For example, `Images.entropy` from `Images.jl`.
-- filter::Function`\\
+- `filter::Function`\\
     Function used for smearing.\\- `kwargs...`\\
     Additional styling behavior. \\
 
 ## Keyword arguments (kwargs)
 - `n_permutations::Number = 10` \\
     Number fo permutations. Useful for mode "permuted_means" where it defines number of random permutations before averaging.
-- mode::String = "basic"` \\
+- `mode::String = "basic"` \\
     With the "permuted_means" mode, results are given as the absolute value between the detector result over the given data set and the randomly permuted data set.
 
 **Return Value:** DataFrame with pattern detection values. Dimensions: experimental events, channels.
