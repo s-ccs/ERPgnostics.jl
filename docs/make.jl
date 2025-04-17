@@ -35,7 +35,7 @@ makedocs(;
     ),
     pages = [
         "ERPgnostics highlights" => "index.md",
-        "ERP image and patterns" => "patterns.md",
+        "ERP image and patterns" => "generated/intro/patterns.md",
         "Toposeries with patterns" => "generated/intro/toposeries.md",
         "Diagnostics" => "generated/intro/gnostics.md",
         "API / DocStrings" => "api.md",
