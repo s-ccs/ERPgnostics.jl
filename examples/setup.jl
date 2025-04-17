@@ -24,7 +24,6 @@ begin
 	using DSP
 	using JLD2
 	using WGLMakie
-	using Revise
 	using ProgressBars
 end
 
