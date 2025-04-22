@@ -4,10 +4,7 @@ using UnfoldMakie
 using ERPgnostics
 using CSV
 
-begin
-    evts_fix = DataFrame(CSV.File("data/events.csv"))
-    data_all, evts = simulate_6patterns()
-end
+data_all, evts = simulate_6patterns()
 
 # # Here you can see how by sorting the same data by different values you can create 6 different patters.
 
