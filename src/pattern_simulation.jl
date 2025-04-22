@@ -26,9 +26,9 @@ Simulate linear basis. Create abline EPR pattern /.
 ## Arguments
 
 - `evts::DataFrame`\\
-    tmp
+    Experimental events for simulated data.
 - `maxlength::DataFrame`\\
-    tmp
+    Maximum length of the basis function.
 
 **Return Value:** basis. 
 """
@@ -45,9 +45,9 @@ Simulate lognormal basis. Creates ERP pattern called asymetrical fan |/.
 ## Arguments
 
 - `evts::DataFrame`\\
-    tmp
+    Experimental events for simulated data.
 - `maxlength::DataFrame`\\
-    tmp
+    Maximum length of the basis function.
 
 **Return Value:** basis. 
 """
@@ -69,9 +69,9 @@ Simulate Hanning basis. Creates ERP pattern called symmetrical fan V.
 ## Arguments
 
 - `evts::DataFrame`\\
-    tmp
+    Experimental events for simulated data.
 - `maxlength::DataFrame`\\
-    tmp
+    Maximum length of the basis function.
 
 **Return Value:** basis. 
 """
@@ -97,9 +97,9 @@ Check that all bases have maxlength by appending or truncating.
 ## Arguments
 
 - `evts::DataFrame`\\
-    tmp
+    Experimental events for simulated data.
 - `maxlength::DataFrame`\\
-    tmp
+    Maximum length of the basis function.
 
 **Return Value:** basis. 
 """
@@ -116,7 +116,7 @@ function truncate_basisfunction(basis, maxlength)
 end
 
 """
-    simulate_6patterns(μ = 3.2, σ = 0.5)
+    simulate_6patterns(μ = 3.2, σ = 0.5; kwargs...)
 
 Simulate 6 ERP patterns in one dataset.\\
 Simulated patterns: Sigmoid, One-sided fan, Two-sided fan, Diverging bar, Hourglass bar, Tilted bar.\\
@@ -130,9 +130,14 @@ Columns in resulting sim\\_6patterns Data Frame to simulate this patterns: Δlat
 - `σ::Float = 3.2`\\
     Controls standart deviation.
 
+## `kwargs...`\\
+- `rng::MersenneTwister = MersenneTwister(1)`\\
+    Random number generator.
+
 **Return Value:** `sim\\_6patterns::Matrix{Float64}` with voltages and `sim_evts::DataFrame` with events. 
 """
-function simulate_6patterns(μ = 3.2, σ = 0.5; tmp = nothing)
+function simulate_6patterns(μ = 3.2, σ = 0.5; rng = MersenneTwister(1))
+    
     design = SingleSubjectDesign(;
         conditions = Dict(
             :condition => ["car", "face"],
@@ -141,7 +146,7 @@ function simulate_6patterns(μ = 3.2, σ = 0.5; tmp = nothing)
             :durationB => range(10, 30, length = 8),
             :duration_linear => range(5, 40, length = 8),
         ),
-        event_order_function = x -> shuffle(MersenneTwister(1), x),
+        event_order_function = (rng, x) -> shuffle(rng, x),
     )
 
     p1 = LinearModelComponent(; basis = p100(), formula = @formula(0 ~ 1), β = [5])
