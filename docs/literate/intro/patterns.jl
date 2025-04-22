@@ -6,7 +6,7 @@ using CSV
 
 data_all, evts = simulate_6patterns()
 
-# # Here you can see how by sorting the same data by different values you can create 6 different patters.
+# Here, you can see how sorting the same data by different values creates six distinct patterns.
 
 let
     f = Figure(size = (500, 1200))
