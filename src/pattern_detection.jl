@@ -53,29 +53,29 @@ end
 
 Pattern detector.\\
 Basic mode:\\
-- For each channel and soring variable, use the `complex_pattern' function.
+- Use the `complex_pattern' function for each channel and sorting variable.
 
-Mode of permuted means:\\
-- Create a data set of detector values based on given data, but shuffled randomly.\\
+Permuted means mode:\\
+- Create a data set of detector values based on given data, but randomly shuffled.\\
 - Compute detector values for given data over each channel and sort value.\\
-- Find the absolute difference between erp\\_data and shaffled\\_data.\\
+- Find the absolute difference between erp\\_data and shuffled\\_data.\\
 
 ## Arguments
 
 - `erp_data::Array{Float64, 3}`\\
-    3-dimensional Array of voltages of Event-related potentials. Dimensions: time of recording, trials, channels. 
+    3-dimensional Array of voltages of event-related potentials. Dimensions: time of recording, trials, channels. 
 - `detector::Function`\\
     Function used for pattern detection.\\
     For example, `Images.entropy` from `Images.jl`.
 - `filter::Function`\\
-    Function used for smearing.\\- `kwargs...`\\
+    Function used for smearing.\\
     Additional styling behavior. \\
 
 ## Keyword arguments (kwargs)
 - `n_permutations::Number = 10` \\
     Number fo permutations. Useful for mode "permuted_means" where it defines number of random permutations before averaging.
 - `mode::String = "basic"` \\
-    With the "permuted_means" mode, results are given as the absolute value between the detector result over the given data set and the randomly permuted data set.
+    Has two modes: basic and `permuted_means`. With `permuted_means` results are given as the absolute value between the detector result over the given data set and the randomly permuted data set.
 
 **Return Value:** DataFrame with pattern detection values. Dimensions: experimental events, channels.
 """
