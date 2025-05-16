@@ -3,6 +3,8 @@ using DataFrames
 using UnfoldMakie
 using JLD2
 using ERPgnostics
+
+# If you want just static image activate CairoMakie. For interactive plots use and activate WGLMakie
 CairoMakie.activate!()
 
 # Data input
