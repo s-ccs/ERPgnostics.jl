@@ -19,7 +19,7 @@ function inter_heatmap(pattern_detection_values::DataFrame)
     f = Figure(size = (600, 600))
     str = @lift("Entropy d image, indexes: " * string($chan_i) * ", " * string($var_i))
 
-    ax = WGLMakie.Axis(
+    ax = Makie.Axis(
         f[1, 1:4],
         xautolimitmargin = (0, 0),
         yautolimitmargin = (0, 0),
@@ -35,10 +35,15 @@ function inter_heatmap(pattern_detection_values::DataFrame)
     on(events(f).mousebutton, priority = 1) do event
         if event.button == Mouse.left && event.action == Mouse.press
             plot, _ = pick(ax.scene)
-            a = DataInspector(plot)
-            pos = WGLMakie.position_on_plot(plot, -1, apply_transform = false)[Vec(1, 2)]
-            b = WGLMakie._pixelated_getindex(plot[1][], plot[2][], plot[3][], pos, true)
-            chan_i[], var_i[] = b[1], b[2]
+            if plot !== nothing
+                try
+                    pos = Makie.position_on_plot(plot, -1, apply_transform = false)[Vec(1, 2)]
+                    b = Makie._pixelated_getindex(plot[1][], plot[2][], plot[3][], pos, true)
+                    chan_i[], var_i[] = b[1], b[2]
+                catch e
+                    @warn "Error in mouse event callback: $e"
+                end
+            end
         end
     end
     f
@@ -74,7 +79,7 @@ function inter_heatmap_image(
     chan_i = Observable(1)
     sort_names = names(pattern_detection_values)
     f = Figure()
-    ax = WGLMakie.Axis(
+    ax = Makie.Axis(
         f[1, 1:4],
         title = "Entropy d image",
         xlabel = "Channels",
@@ -118,9 +123,15 @@ function inter_heatmap_image(
     on(events(f).mousebutton, priority = 1) do event
         if event.button == Mouse.left && event.action == Mouse.press
             plot, _ = pick(ax.scene)
-            pos = WGLMakie.position_on_plot(plot, -1, apply_transform = false)[Vec(1, 2)]
-            b = WGLMakie._pixelated_getindex(plot[1][], plot[2][], plot[3][], pos, true)
-            chan_i[], var_i[] = b[1], b[2]
+            if plot !== nothing
+                try
+                    pos = Makie.position_on_plot(plot, -1, apply_transform = false)[Vec(1, 2)]
+                    b = Makie._pixelated_getindex(plot[1][], plot[2][], plot[3][], pos, true)
+                    chan_i[], var_i[] = b[1], b[2]
+                catch e
+                    @warn "Error in mouse event callback: $e"
+                end
+            end
             #a = DataInspector(plot)
         end
     end
