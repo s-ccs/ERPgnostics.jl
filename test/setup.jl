@@ -21,4 +21,5 @@ using ProgressBars
 using Test
 path = dirname(Base.current_project())
 include(path * "/docs/example_data.jl")
+CairoMakie.activate!() # for static images
 #include("../docs/example_data.jl")
