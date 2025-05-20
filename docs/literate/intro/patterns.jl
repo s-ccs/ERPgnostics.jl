@@ -11,7 +11,7 @@ data_all, evts = simulate_6patterns()
 # <details>
 # <summary>Click to expand</summary>
 # ```
-function draw_erpimages()
+begin
     f = Figure(size = (900, 600))
     plot_erpimage!(
         f[1, 1],
@@ -52,10 +52,8 @@ function draw_erpimages()
         sortvalues = evts.duration_linear,
         axis = (; title = "Tilted bar; sorted by duration_linear", xlabel = "Time [ms]", ylabelvisible = false,  yticklabelsvisible = false),
     )
-    f
 end
 # ```@raw html
 # </details >
-#
-```
-draw_erpimages()
+# ```
+f
