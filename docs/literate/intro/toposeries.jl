@@ -24,8 +24,9 @@ plot_topoplotseries(
     short_pdvs;
     nrows = 2,
     mapping = (; col = :condition),
-    axis = (; xlabel = "Conditions"),
+    axis = (; xlabel = "Sorting conditions"),
     colorbar = (; label = "Pattern detection values"),
+    visual = (; colormap = Reverse(:RdGy_4)),
     positions = positions_128,
 )
 
