@@ -24,6 +24,7 @@ include("interactive_heatmap.jl")
 include("interactive_topoplots.jl")
 include("pattern_detection.jl")
 include("pattern_simulation.jl")
+include("example_data.jl")
 include("filters.jl")
 
 export inter_toposeries # or better toposeries_inter
@@ -40,4 +41,5 @@ export complex_pattern_detector
 
 export slow_filter
 export mean_filter
+export example_data
 end

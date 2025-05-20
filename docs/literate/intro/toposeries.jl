@@ -11,22 +11,32 @@ using JLD2
 using ERPgnostics
 CairoMakie.activate!()
 
-# Data input
+# **Data input**
 path = dirname(dirname(Base.current_project()))
-include(path * "/docs/example_data.jl")
 
 positions_128 = JLD2.load_object(path * "/data/positions_128.jld2")
-pattern_detection_values = example_data();
-
-# Interactive topoplot series with one row
-
+pattern_detection_values  = ERPgnostics.examples_data("pattern_detection_values", mode = 2);
 desired_conditions = ["duration", "fix_avgpos_x", "fix_avgpos_y", "fix_avgpupilsize"]
-inter_toposeries(
-    filter(row -> row.condition in desired_conditions, pattern_detection_values);
+short_pdvs = filter(row -> row.condition in desired_conditions, pattern_detection_values)
+
+# **Standart topoplot series**
+plot_topoplotseries(
+    short_pdvs;
+    nrows = 2,
+    mapping = (; col = :condition),
+    axis = (; xlabel = "Conditions"),
+    colorbar = (; label = "Pattern detection values"),
     positions = positions_128,
 )
 
-# Interactive topoplot series with multiple rows
+
+# **Interactive topoplot series with one row**
+inter_toposeries(
+    short_pdvs;
+    positions = positions_128,
+)
+
+# **Interactive topoplot series with multiple rows**
 inter_toposeries(
     pattern_detection_values;
     positions = positions_128,

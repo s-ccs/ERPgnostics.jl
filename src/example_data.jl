@@ -16,7 +16,7 @@ Datasets:
 
 **Return Value:** `DataFrame`.
 """
-function example_data(example = "pattern_detection_values"; mode = 1)
+function examples_data(example = "pattern_detection_values"; mode = 1)
     if mode == 1
         datapath = dirname(dirname(Base.current_project())) * "/data/evts_d.csv"
     else
