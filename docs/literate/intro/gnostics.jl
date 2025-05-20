@@ -1,7 +1,7 @@
 using CairoMakie
 using DataFrames
 using UnfoldMakie
-using JLD2
+using JLD2, CSV
 using ERPgnostics
 
 CairoMakie.activate!()
