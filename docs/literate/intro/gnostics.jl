@@ -11,7 +11,7 @@ path = dirname(dirname(Base.current_project()))
 evts = DataFrame(CSV.File(path * "/data/events.csv"))
 positions_128 = JLD2.load_object(path * "/data/positions_128.jld2")
 erps_fix_32 = JLD2.load_object(path * "/data/erps_fix_32.jld2")
-pattern_detection_values_32 = examples_data("pattern_detection_values_32");
+pattern_detection_values_32 = ERPgnostics.examples_data("pattern_detection_values_32");
 desired_conditions = ["duration", "fix_avgpos_x", "fix_avgpos_y", "fix_avgpupilsize"]
 
 # Plotting
