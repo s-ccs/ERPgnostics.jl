@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>ERP image and patterns · ERPgnostics.jl</title><meta name="title" content="ERP image and patterns · ERPgnostics.jl"/><meta property="og:title" content="ERP image and patterns · ERPgnostics.jl"/><meta property="twitter:title" content="ERP image and patterns · ERPgnostics.jl"/><meta name="description" content="Documentation for ERPgnostics.jl."/><meta property="og:description" content="Documentation for ERPgnostics.jl."/><meta property="twitter:description" content="Documentation for ERPgnostics.jl."/><meta property="og:url" content="https://s-css.github.io/ERPgnostics.jl/generated/intro/patterns/"/><meta property="twitter:url" content="https://s-css.github.io/ERPgnostics.jl/generated/intro/patterns/"/><link rel="canonical" href="https://s-css.github.io/ERPgnostics.jl/generated/intro/patterns/"/><script data-outdated-warner src="../../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../../assets/documenter.js"></script><script src="../../../search_index.js"></script><script src="../../../siteinfo.js"></script><script src="../../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../../">ERPgnostics.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../../">Homepage</a></li><li><span class="tocitem">Theory</span><ul><li class="is-active"><a class="tocitem" href>ERP image and patterns</a></li><li><a class="tocitem" href="../toposeries/">Toposeries with patterns</a></li><li><a class="tocitem" href="../gnostics/">Diagnostics</a></li></ul></li><li><a class="tocitem" href="../../../api/">API / DocStrings</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Theory</a></li><li class="is-active"><a href>ERP image and patterns</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>ERP image and patterns</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/s-ccs/ERPgnostics.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/s-ccs/ERPgnostics.jl/blob/main/docs/literate/intro/patterns.jl" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><pre><code class="language-julia hljs">using CairoMakie
+using DataFrames
+using UnfoldMakie
+using ERPgnostics
+using CSV
+
+data_all, evts = simulate_6patterns()</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">([-10.041980253086226 -4.395314615239555 … -10.414711454475782 1.1209906529218596; -9.869622669655806 -5.12117488241738 … -6.230178741986519 -0.4408582037911213; … ; 8.571023452226797 -5.04699973212992 … -10.458024432552847 -9.203275752996495; 12.32716869995733 -1.6349772406590208 … -9.53955933461744 -10.699349541730339], <span class="sgr1">8192×7 DataFrame
+  Row │ durationB  continuous  condition  duration  duration_linear  latency   ⋯
+      │<span class="sgr90"> Float64    Float64     String     Float64   Float64          Int64     ⋯
+──────┼─────────────────────────────────────────────────────────────────────────
+    1 │   21.4286    0.857143  face        31.4286             20.0       24   ⋯
+    2 │   30.0      -1.42857   face        42.8571             20.0       64
+    3 │   24.2857    1.42857   face        42.8571             30.0       81
+    4 │   18.5714    2.0       car         77.1429             20.0       94
+    5 │   18.5714   -0.857143  car         65.7143             35.0      102   ⋯
+    6 │   21.4286   -0.285714  face       100.0                35.0      143
+    7 │   12.8571    0.285714  car         77.1429             35.0      180
+    8 │   12.8571   -2.0       car        100.0                15.0      204
+  ⋮   │     ⋮          ⋮           ⋮         ⋮             ⋮            ⋮      ⋱
+ 8186 │   24.2857    0.285714  face        31.4286             30.0   228380   ⋯
+ 8187 │   30.0       0.857143  car         42.8571             30.0   228403
+ 8188 │   18.5714    0.285714  car         31.4286              5.0   228444
+ 8189 │   24.2857   -0.857143  face        65.7143             20.0   228469
+ 8190 │   24.2857    0.285714  face        42.8571             10.0   228495   ⋯
+ 8191 │   15.7143   -0.285714  face        31.4286             30.0   228513
+ 8192 │   24.2857    0.285714  face        88.5714             10.0   228541
+</span><span class="sgr36">                                                  1 column and 8177 rows omitted)</span></span></code></pre><p>Here, you can see how sorting the same data by different values creates six distinct patterns.</p><details>
+<summary>Click to expand</summary><pre><code class="language-julia hljs">begin
+    f = Figure(size = (900, 600))
+    plot_erpimage!(
+        f[1, 1],
+        data_all;
+        sortvalues = evts.Δlatency,
+        axis = (; title = &quot;Sigmoid; sorted by Δlatency&quot;, xlabelvisible = false, xticklabelsvisible = false),
+        colorbar = (; label = &quot;&quot;),
+    )
+    plot_erpimage!(
+        f[2, 1],
+        data_all;
+        sortvalues = evts.duration,
+        axis = (; title = &quot;One-sided fan; sorted by duration&quot;, xlabelvisible = false, xticklabelsvisible = false),
+        colorbar = (; label = &quot;&quot;),
+    )
+    plot_erpimage!(
+        f[3, 1],
+        data_all;
+        sortvalues = evts.durationB,
+        axis = (; title = &quot;Two-sided fan; sorted by durationB&quot;, xlabel = &quot;Time [ms]&quot;),
+        colorbar = (; label = &quot;&quot;),
+    )
+    plot_erpimage!(
+        f[1, 2],
+        data_all;
+        sortvalues = evts.condition .== &quot;car&quot;,
+        axis = (; title = &quot;Diverging bar; sorted by iscar&quot;, xlabelvisible = false, ylabelvisible = false, xticklabelsvisible = false,  yticklabelsvisible = false),
+    )
+    plot_erpimage!(
+        f[2, 2],
+        data_all;
+        sortvalues = evts.continuous,
+        axis = (; title = &quot;Hourglass bar; sorted by continuous&quot;, xlabelvisible = false, ylabelvisible = false,  xticklabelsvisible = false,  yticklabelsvisible = false),
+    )
+    plot_erpimage!(
+        f[3, 2],
+        data_all;
+        sortvalues = evts.duration_linear,
+        axis = (; title = &quot;Tilted bar; sorted by duration_linear&quot;, xlabel = &quot;Time [ms]&quot;, ylabelvisible = false,  yticklabelsvisible = false),
+    )
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">GridPosition(GridLayout[3, 2] (6 children), GridLayoutBase.Span(3:3, 2:2), GridLayoutBase.Inner())</code></pre></details ><pre><code class="language-julia hljs">f</code></pre><img src="b05cae7a.png" alt="Example block output"/><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../../">« Homepage</a><a class="docs-footer-nextpage" href="../toposeries/">Toposeries with patterns »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.11.4 on <span class="colophon-date" title="Tuesday 20 May 2025 17:34">Tuesday 20 May 2025</span>. Using Julia version 1.11.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
