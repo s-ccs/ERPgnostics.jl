@@ -15,7 +15,7 @@ CairoMakie.activate!()
 path = dirname(dirname(Base.current_project()))
 
 positions_128 = JLD2.load_object(path * "/data/positions_128.jld2")
-pattern_detection_values  = ERPgnostics.examples_data("pattern_detection_values", mode = 2);
+pattern_detection_values  = ERPgnostics.examples_data("pattern_detection_values");
 desired_conditions = ["duration", "fix_avgpos_x", "fix_avgpos_y", "fix_avgpupilsize"]
 short_pdvs = filter(row -> row.condition in desired_conditions, pattern_detection_values)
 
