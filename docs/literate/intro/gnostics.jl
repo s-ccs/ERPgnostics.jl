@@ -24,3 +24,5 @@ inter_toposeries_image(
     positions = positions_128[1:32],
     figure_configs = (; size = (1500, 700)),
 )
+
+# ![](ERRgnostics_inaction.gif)
