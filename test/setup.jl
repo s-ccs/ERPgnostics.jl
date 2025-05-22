@@ -15,7 +15,6 @@ using ComputationalResources
 using Observables
 using DSP
 using JLD2
-using WGLMakie
 using ProgressBars
 
 using Test
