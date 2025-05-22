@@ -1,48 +1,52 @@
-includet("setup.jl")
-includet("../src/topoplots.jl")
-
 Makie.inline!(false)
-
+using HDF5
+using DataFrames
+using CSV, JLD2
+using GLMakie
+GLMakie.activate!()
 # data
+function drop_all_nan_columns(df::DataFrame)
+    non_all_nan_cols = names(df)[.!all.(col -> all(x -> x isa Number && isnan(x), col), eachcol(df))]
+    return df[:, non_all_nan_cols]
+end
 begin
-    fid = h5open("data/data_fixations.hdf5", "r")
+    fid = h5open("../data/data_fixations.hdf5", "r")
     erps_fix = read(fid["data"]["data_fixations.hdf5"])
     close(fid)
 
-    evts = DataFrame(CSV.File("data/events.csv"))
-    evts_d = CSV.read("data/evts_d.csv", DataFrame)
-    evts_mf = CSV.read("data/evts_mf.csv", DataFrame)
-    positions_128 = JLD2.load_object("data/positions_128.jld2")
+    evts_raw = DataFrame(CSV.File("../data/events.csv"))
+    evts_d = CSV.read("../data/evts_d.csv", DataFrame)
+    evts_mf = CSV.read("../data/evts_mf.csv", DataFrame)
+    positions_128 = JLD2.load_object("../data/positions_128.jld2")
     timing = -0.5:0.001953125:1.0
+
+    
+    evts = drop_all_nan_columns(evts_raw)
 end
 
 begin
-    pattern_detection_values = stack(evts_d)
-    pattern_detection_values.timing = 1:nrow(pattern_detection_values)
-    pattern_detection_values.label = 1:nrow(pattern_detection_values)
+    evts_d.channel = 1:nrow(evts_d)
+    pattern_detection_values = stack(evts_d[1:32, :])
     rename!(pattern_detection_values, :variable => :condition, :value => :estimate)
-    pattern_detection_values.rows = vcat(
-        repeat(["A"], size(pattern_detection_values, 1) ÷ 4),
-        repeat(["B"], size(pattern_detection_values, 1) ÷ 4),
-        repeat(["C"], size(pattern_detection_values, 1) ÷ 4),
-        repeat(["D"], size(pattern_detection_values, 1) ÷ 4),
-    )
+
+    valid_conditions = names(evts)
+    filtered_values = filter(row -> row.condition in valid_conditions, pattern_detection_values)
 end
 
-inter_toposeries(filter(x -> x.rows == "A", pattern_detection_values))
-inter_toposeries(filter(x -> x.rows == "B", pattern_detection_values))
-inter_toposeries(filter(x -> x.rows == "C", pattern_detection_values))
-inter_toposeries(filter(x -> x.rows == "D", pattern_detection_values))
+inter_toposeries_image(
+    filtered_values,
+    evts,
+    erps_fix[1:32, :, :],
+    1:769;
+    positions = positions_128[1:32],
+    toposeries_configs = (; nrows = 3),
+    erpimage_configs = (; meanplot_axis = (; xlabel = "Time [s]")),
+    figure_configs = (; size = (1500, 700)),
+)
 
-inter_toposeries_image(pattern_detection_values1, evts, erps)
-
-inter_toposeries_image(filter(x -> x.rows == "A", pattern_detection_values), evts, erps_fix, timing)
-inter_toposeries_image(filter(x -> x.rows == "B", pattern_detection_values), evts, erps_fix, timing) #fails
-inter_toposeries_image(filter(x -> x.rows == "C", pattern_detection_values), evts, erps_fix, timing)
-inter_toposeries_image(filter(x -> x.rows == "D", pattern_detection_values), evts, erps_fix, timing)
-
+###################################
 inter_toposeries_image(filter(x -> x.condition == "fix_samebox", pattern_detection_values), evts, erps_fix, timing)
-
+erps_fix[1:32, :, :]
 
 # make that workable
 begin
@@ -51,21 +55,3 @@ begin
 end
 
 inter_toposeries_image(pattern_detection_values, evts_sim, data_all, timing; positions_128 = positions_128)
-
-
-# debugging zone
-
-begin
-    pattern_detection_values2 = stack(evts_mf)
-    pattern_detection_values2.timing = 1:nrow(pattern_detection_values)
-    pattern_detection_values2.label = 1:nrow(pattern_detection_values)
-    rename!(pattern_detection_values2, :variable => :condition, :value => :estimate)
-    pattern_detection_values2.rows = vcat(
-        repeat(["A"], size(pattern_detection_values2, 1) ÷ 4),
-        repeat(["B"], size(pattern_detection_values2, 1) ÷ 4),
-        repeat(["C"], size(pattern_detection_values2, 1) ÷ 4),
-        repeat(["D"], size(pattern_detection_values2, 1) ÷ 4),
-    )
-end
-
-inter_toposeries_image(filter(x -> x.rows == "A", pattern_detection_values2), evts, erps_fix, timing)
