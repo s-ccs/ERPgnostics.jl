@@ -6,7 +6,7 @@ begin
     using Unfold
     using CSV, DataFrames
     using Random, Format
-    using WGLMakie, Makie
+    using Makie
     using Statistics, StatsBase
     using HDF5, FileIO
     using Printf

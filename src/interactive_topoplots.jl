@@ -88,7 +88,7 @@ ERP image will have trials on y-axis and time on x-axis
     DataFrame with columns of experimental events and rows with trials. Each value is an event value in a trial.
 - `erps::Array{Float64, 3}`\\
     3-dimensional Array of voltages of Event-related potentials. Dimensions: channels, time of recording, trials. 
-- `timing::?`\\
+- `timing::AbstractVector`\\
     Timing of recording. Should be similar to y-value of erps. 
 - `figure_configs::NamedTuple = (;)`\\
     Here you can flexibly change configurations of the Figure axis.\\
@@ -122,7 +122,12 @@ function inter_toposeries_image(
 )
 
     cond_names = unique(pattern_detection_values.condition)
-    obs_tuple = Observable((0, 1, 1))
+    obs_tuple = Observable((1, 1, 1)) # row, column, channel
+    
+    nrows = haskey(toposeries_configs, :nrows) ? toposeries_configs.nrows : 1
+    maxcol = ceil(Int, length(cond_names) / nrows)
+    idx = @lift ($obs_tuple[1] - 1) * maxcol + $obs_tuple[2]
+
     f = Makie.Figure(; figure_configs...)
     str = @lift(
         "Entropy topoplots: channel - " *
@@ -130,7 +135,7 @@ function inter_toposeries_image(
         ", sorting variable - " *
         string(cond_names[$obs_tuple[2]])
     )
-
+ 
     ax = Makie.Axis(f[1, 1:5], xlabelvisible = false, title = str)
     hidespines!(ax)
     hidedecorations!(ax)
@@ -150,9 +155,10 @@ function inter_toposeries_image(
     )
 
     single_channel_erpimage = @lift(erps[$obs_tuple[3], :, :])
-    sortval = @lift(events[:, cond_names[$obs_tuple[2]]])
+    sortval = @lift(events[:, $idx])
 
-    str2 = @lift(string(cond_names[$obs_tuple[2]]))
+
+    str2 = @lift(string(cond_names[$idx]))
     plot_erpimage!(
         f[2, 1:5],
         timing,

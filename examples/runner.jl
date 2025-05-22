@@ -5,7 +5,7 @@ begin
     using Revise
     Revise.retry()
     using ERPgnostics
-    include("test/setup.jl")
+    include("$(stub)/test/setup.jl")
     using JuliaFormatter
     ENV["JULIA_DEBUG"] = "ERPgnostics"
     cd("$(stub)/test")
