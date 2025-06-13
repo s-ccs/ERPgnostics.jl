@@ -15,6 +15,7 @@ pattern_detection_values_32 = ERPgnostics.examples_data("pattern_detection_value
 desired_conditions = ["duration", "fix_avgpos_x", "fix_avgpos_y", "fix_avgpupilsize"]
 
 # ERPgnostics in action
+
 # *Static version*
 
 inter_toposeries_image(
@@ -28,4 +29,5 @@ inter_toposeries_image(
 
 # *Interactive version*
 
+# ![](../assets/ERRgnostics_inaction.gif)
 # ![](ERRgnostics_inaction.gif)

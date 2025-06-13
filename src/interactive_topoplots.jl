@@ -157,7 +157,6 @@ function inter_toposeries_image(
     single_channel_erpimage = @lift(erps[$obs_tuple[3], :, :])
     sortval = @lift(events[:, $idx])
 
-
     str2 = @lift(string(cond_names[$idx]))
     plot_erpimage!(
         f[2, 1:5],
