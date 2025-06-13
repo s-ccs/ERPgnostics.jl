@@ -1,22 +1,31 @@
 
-using FFTW
-data_all, evts = simulate_6patterns()
+using Statistics, FFTW
+using GLMakie
+using UnfoldMakie, HDF5, JLD2, CSV, DataFrames
+GLMakie.activate!() 
+data_all, evts_all = simulate_6patterns()
 
 plot_erpimage(data_all)
 plot_erpimage(data_all; erpblur=51)
-plot_erpimage(data_all; erpblur=51, sortvalues=evts.Δlatency)
-
-
-
-data_all[:, sortperm(evts.Δlatency)]
-
+plot_erpimage(data_all; erpblur=51, sortvalues=evts_all.Δlatency)
 
 # Assuming data_all is a 2D real array (e.g., from an image or spatial data)
 
+function pattern_metrics(data)
+    F = abs.(fftshift(fft(data)))
+    P = F[:] ./ sum(F) .+ eps()  # normalize & avoid log(0)
+    entropy = -sum(P .* log.(P))  # Shannon entropy
+    std_spectrum = StatsBase.std(abs.(fft(data))[:])
+
+    total_energy = sum(F)
+    top_energy = sum(sort(F[:], rev=true)[1:10])  # top 10 values
+    energy_concentration_ratio = top_energy / total_energy  # higher = more structured
+    return round.((entropy, std_spectrum, energy_concentration_ratio); sigdigits = 6)
+end
 
 function plot_fft_entropy(data_all; evt=nothing, dx=1.0, dy=1.0)
     # Size of the input data
-    #Ny, Nx = size(data_all)
+    Ny, Nx = size(data_all)
 
     #dx, dy = 1 / Nx, 1 / Ny  # You can adjust these based on physical spacing if known
 
@@ -49,7 +58,7 @@ function plot_fft_entropy(data_all; evt=nothing, dx=1.0, dy=1.0)
 
     # FFT magnitude (right)
     ax2 = CairoMakie.Axis(fig[1:6, 2], title = "2D Spectrum (Magnitude)")
-    heatmap!(ax2, fx, fy, log.(100 .+ abs.(F2)); colormap = :viridis)
+    heatmap!(ax2, fx, fy, log.(100 .+ abs.(fftshift(fft(data_all)))); colormap = :viridis)
 
     ax_metrics = CairoMakie.Axis(fig[7, :], title = "Pattern Metrics")
     text!(
@@ -63,41 +72,10 @@ function plot_fft_entropy(data_all; evt=nothing, dx=1.0, dy=1.0)
 end
 
 plot_fft_entropy(data_all; dx=1.0, dy=1.0)
-plot_fft_entropy(data_all; evt = evts.duration, dx=1.0, dy=1.0)
-plot_fft_entropy(data_all, evt = evts.Δlatency; dx=1.0, dy=1.0)
+plot_fft_entropy(data_all; evt = evts_all.duration, dx=1.0, dy=1.0)
+plot_fft_entropy(data_all, evt = evts_all.Δlatency; dx=1.0, dy=1.0)
 
 
-begin
-    F = fft(data_all)             # 1D or 2D FFT
-    P = abs.(F)
-    P ./= sum(P)              # Normalize to sum to 1
-    P .+= eps()               # Avoid log(0)
-    entropy = -sum(P .* log.(P))
-end
-
-begin
-    F = fft(data_all[:, sortperm(evts.Δlatency)])             # 1D or 2D FFT
-    P = abs.(F)
-    P ./= sum(P)              # Normalize to sum to 1
-    P .+= eps()               # Avoid log(0)
-    entropy = -sum(P .* log.(P))
-end
-
-
-
-
-
-function pattern_metrics(data)
-    F = abs.(fftshift(fft(data)))
-    P = F[:] ./ sum(F) .+ eps()  # normalize & avoid log(0)
-    entropy = -sum(P .* log.(P))  # Shannon entropy
-    std_spectrum = std(abs.(fft(data))[:])
-
-    total_energy = sum(F)
-    top_energy = sum(sort(F[:], rev=true)[1:10])  # top 10 values
-    energy_concentration_ratio = top_energy / total_energy  # higher = more structured
-    return round.((entropy, std_spectrum, energy_concentration_ratio); sigdigits = 6)
-end
 pattern_metrics(data_all)
 pattern_metrics(data_all[:, sortperm(evts.Δlatency)])
 pattern_metrics(data_all[:, sortperm(evts.continuous)])
@@ -121,36 +99,62 @@ function spectral_entropy(data)
     return round(entropy; sigdigits = 6)
 end
 
+function spectral_std(data)
+    return round(StatsBase.std(abs.(fft(data))[:]); sigdigits = 6)
+end
+
 two_channels = JLD2.load_object("../data/channels_1_123.jld2")
-evts = DataFrame(CSV.File("../data/events.csv"))
+
 sort_values = evts[:, [:duration, :onset]]
 @time detector_value = complex_pattern_detector(two_channels, evts, slow_filter, spectral_entropy)
 
 
-fid = h5open("/store/users/mikheev/projects/erpgnostics_dev/dev/ERPgnostics/data/data_fixations.hdf5", "r")
-erps_fix = read(fid["data"]["data_fixations.hdf5"])
-close(fid)
 
-erps_reordered = permutedims(erps_fix, (2, 3, 1))
+
 @time detector_value_long = complex_pattern_detector(erps_reordered, evts, slow_filter, spectral_entropy)
 detector_value_long.channel = 1:nrow(detector_value_long)
 pattern_detection_values = stack(detector_value_long)
 rename!(pattern_detection_values, :variable => :condition, :value => :estimate)
 JLD2.save_object("../data/pattern_detection_values_fft.jld2", pattern_detection_values)
 
-size(erps_reordered)
-size(evts)
+fid = h5open("../data/data_fixations.hdf5", "r")
+erps_fix = read(fid["data"]["data_fixations.hdf5"])
+close(fid)
+erps_reordered = permutedims(erps_fix, (2, 3, 1))
+
 positions_128 = JLD2.load_object("../data/positions_128.jld2")
+pattern_detection_values = JLD2.load_object("../data/pattern_detection_values_fft_entropy.jld2")
+evts = DataFrame(CSV.File("../data/events.csv"))
 
-
+desired_conditions = ["duration", "fix_avgpos_x", "fix_avgpos_y", "fix_avgpupilsize"]
+filtered_data = filter(row -> row.condition in desired_conditions, pattern_detection_values)
 
 inter_toposeries_image(
-    pattern_detection_values,
+    filtered_data,
     evts,
     erps_fix,
     1:769;
     positions = positions_128,
+    toposeries_configs = (; colorbar = (; label = "Spectral Entropy")),
     figure_configs = (; size = (1500, 700)),
+    erpimage_configs = (; erpblur = 3)
 )
 
-WGLMakie.activate!() 
+
+
+detector_spectral_std = complex_pattern_detector(erps_reordered, evts, slow_filter, spectral_std)
+detector_spectral_std.channel = 1:nrow(detector_spectral_std)
+pattern_detection_values = stack(detector_spectral_std)
+rename!(pattern_detection_values, :variable => :condition, :value => :estimate)
+JLD2.save_object("../data/pattern_detection_values_fft_std.jld2", pattern_detection_values)
+filtered_data = filter(row -> row.condition in desired_conditions, pattern_detection_values)
+inter_toposeries_image(
+    filtered_data,
+    evts,
+    erps_fix,
+    1:769;
+    positions = positions_128,
+    toposeries_configs = (; colorbar = (; label = "Spectral Entropy")),
+    figure_configs = (; size = (1500, 700)),
+    erpimage_configs = (; erpblur = 3)
+)
