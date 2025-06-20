@@ -95,7 +95,7 @@ function complex_pattern_detector(
     end
 
     pbar = ProgressBar(total = length(names(sort_values)))
-    Threads.@threads for n in names(sort_values)
+    for n in names(sort_values)
         sortix = sortperm(sort_values[!, n]) # sort a single value
         col = fill(NaN, size(erp_data, 3))
         for ch = 1:size(erp_data, 3) # iteration over channels

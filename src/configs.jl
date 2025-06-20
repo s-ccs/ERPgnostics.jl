@@ -16,7 +16,7 @@ function supportive_defaults(cfg_symb::Symbol)
             mapping = (; col = :condition),
             axis = (; xlabel = "Conditions", xlabelvisible = false),
             visual = (
-                label_scatter = (markersize = 10, strokewidth = 2),
+                label_scatter = (markersize = 20, strokewidth = 2),
                 contours = (; levels = 0),
                 colormap = Reverse(:RdGy_4),
             ),

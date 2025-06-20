@@ -1,7 +1,7 @@
 
 using Statistics, FFTW
 using GLMakie
-using UnfoldMakie, HDF5, JLD2, CSV, DataFrames
+using UnfoldMakie, HDF5, JLD2, CSV, DataFrames, StatsBase
 GLMakie.activate!() 
 data_all, evts_all = simulate_6patterns()
 
@@ -9,61 +9,81 @@ plot_erpimage(data_all)
 plot_erpimage(data_all; erpblur=51)
 plot_erpimage(data_all; erpblur=51, sortvalues=evts_all.Δlatency)
 
-# Assuming data_all is a 2D real array (e.g., from an image or spatial data)
+function fxfy(data_all)
+    Nx, Ny = size(data_all) # Nx = number of time points, Ny = number of trials
+    Fs = 1024  # Hz, sampling rate
+    dx = 1000 / Fs # ms per sample
+    dy = 1.0 
 
-function pattern_metrics(data)
-    F = abs.(fftshift(fft(data)))
+    # Frequency axes
+    fx = fftshift(fftfreq(Nx, dx))  
+    fy = fftshift(fftfreq(Ny, 1 / dy))
+    q1 = quantile(fx, 0.25)
+    q3 = quantile(fx, 0.75)
+    xmask = (fx .>= q1) .& (fx .<= q3)
+    return fx, fy, q1, q3, xmask
+end
+
+# Assuming data_all is a 2D real array (e.g., from an image or spatial data)
+function pattern_metrics(F, data; quantiles = false)
+    if quantiles == true
+        fx, fy, q1, q3 = fxfy(data)
+        # Compute FFT and crop it to Q1–Q3 band
+        xmask = (fx .>= q1) .& (fx .<= q3)
+        F = F[xmask, :]
+    end
     P = F[:] ./ sum(F) .+ eps()  # normalize & avoid log(0)
     entropy = -sum(P .* log.(P))  # Shannon entropy
     std_spectrum = StatsBase.std(abs.(fft(data))[:])
 
     total_energy = sum(F)
     top_energy = sum(sort(F[:], rev=true)[1:10])  # top 10 values
-    energy_concentration_ratio = top_energy / total_energy  # higher = more structured
-    return round.((entropy, std_spectrum, energy_concentration_ratio); sigdigits = 6)
+    spectral_sparsity = top_energy / total_energy  # higher = more structured, energy_concentration_ratio 
+    spectral_dominance = maximum(F) / sum(F)
+    return round.((entropy, std_spectrum, spectral_sparsity, spectral_dominance); sigdigits = 5)
 end
 
-function plot_fft_entropy(data_all; evt=nothing, dx=1.0, dy=1.0)
-    # Size of the input data
-    Ny, Nx = size(data_all)
 
-    #dx, dy = 1 / Nx, 1 / Ny  # You can adjust these based on physical spacing if known
-
-    if evt === nothing
-        print("no")
+function plot_fft_entropy(data_all; evt=nothing)
+     if evt === nothing
         sorted_data = data_all
     else
-        print("sort")
         sorted_indices = sortperm(evt)
         sorted_data = data_all[:, sorted_indices]
     end
+    
+    data_filtered = slow_filter(sorted_data)
+    F = abs.(fftshift(fft(data_filtered)))
+    entropy, std_spectrum, spectral_sparsity, spectral_dominance = 
+        pattern_metrics(F, data_filtered; quantiles = true)
 
-    entropy, std_spectrum, energy_concentration_ratio = pattern_metrics(slow_filter(sorted_data))
-    # Create figure
+    # Select middle 50% along x (time) axis
+    fx, fy, q1, q3, xmask = fxfy(data_all)
+    # Compute ticks: 5 values including min and max
+    xtickvals = collect(range(q1, q3, length=5))
+    ytickvals = collect(range(extrema(fy)..., length=5))
+
     fig = Figure(size = (900, 420))  
-    #Label(fig[0, 1:2], "2D Fourier Spectrum (Spectral Entropy = $(entropy))"; 
-     #   fontsize = 24, halign = :center)
-
-    # Frequency axes
-    fx = fftshift(fftfreq(Nx, 1 / dx))
-    fy = fftshift(fftfreq(Ny, 1 / dy))
-
     # Original data (left) with ERP image
     plot_erpimage!(
         fig[1:6, 1], data_all;
         sortvalues = evt === nothing ? nothing : evt,
-        erpblur = 51,
-        axis = (; title = "Original 2D Data")
+        erpblur = 3,
+        axis = (; title = "Original 2D Data", xlabel = "Time [ms]"),
     )
 
     # FFT magnitude (right)
-    ax2 = CairoMakie.Axis(fig[1:6, 2], title = "2D Spectrum (Magnitude)")
-    heatmap!(ax2, fx, fy, log.(100 .+ abs.(fftshift(fft(data_all)))); colormap = :viridis)
+    ax2 = CairoMakie.Axis(fig[1:6, 2], title = "2D Spectrum (Magnitude)",
+        xticks = (xtickvals, string.(round.(xtickvals; digits=5))),
+        yticks = (ytickvals, string.(round.(ytickvals; digits=2))),)
+    heatmap!(ax2, fx[xmask], fy, log.(1 .+ F[xmask, :]); colormap = :viridis)
+    ax2.xlabel = "Frequency (c/ms), q2-q3 quantiles"
+    ax2.ylabel = "Frequency (cycles/trial)"
 
-    ax_metrics = CairoMakie.Axis(fig[7, :], title = "Pattern Metrics")
+    ax_metrics = CairoMakie.Axis(fig[7:8, :], title = "Pattern Metrics")
     text!(
         ax_metrics, 1, 0.5,
-        text = "Entropy: $(entropy)    |    Spectrum Std: $(std_spectrum)    |    Energy Ratio: $(energy_concentration_ratio)",
+        text = "Entropy: $(entropy) | Spectrum Std: $(std_spectrum) |\n Spectral sparsity: $(spectral_sparsity) | Spectral dominance: $(spectral_dominance)",
         align = (:center, :center),
         fontsize = 18  # optional
     )
@@ -71,9 +91,9 @@ function plot_fft_entropy(data_all; evt=nothing, dx=1.0, dy=1.0)
     return fig
 end
 
-plot_fft_entropy(data_all; dx=1.0, dy=1.0)
-plot_fft_entropy(data_all; evt = evts_all.duration, dx=1.0, dy=1.0)
-plot_fft_entropy(data_all, evt = evts_all.Δlatency; dx=1.0, dy=1.0)
+plot_fft_entropy(data_all)
+plot_fft_entropy(data_all; evt = evts_all.duration)
+plot_fft_entropy(data_all, evt = evts_all.Δlatency)
 
 
 pattern_metrics(data_all)
