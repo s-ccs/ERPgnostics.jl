@@ -3,8 +3,42 @@ using DataFrames
 using UnfoldMakie
 using ERPgnostics
 using CSV
+using StatsBase
 
 data_all, evts = simulate_6patterns()
+dat_e, evts, times = UnfoldMakie.example_data("sort_data")
+dat_norm = dat_e[:, :] .- mean(dat_e, dims = 2) 
+
+# # Preprocessing
+
+begin
+    f = Figure()
+    plot_erpimage!(f[1, 1], times, dat_e; axis = (; title = "Raw", xlabel = ""), colorbar = (; label = ""))
+    plot_erpimage!(
+        f[1, 2],
+        times,
+        dat_e;
+        sortvalues = evts.Δlatency,
+        axis = (; title = "+ sorted", ylabel = "", xlabel = ""),
+        colorbar = (; label = ""),
+    )
+    plot_erpimage!(
+        f[2, 1],
+        times,
+        dat_norm;
+        sortvalues = evts.Δlatency,
+        axis = (; title = "+ normalised", xlabel = "Time [s]"),
+        colorbar = (; label = ""),
+    )
+    plot_erpimage!(
+        f[2, 2], times, slow_filter(dat_norm); 
+        sortvalues = evts.Δlatency, 
+        axis = (; title = "+ filtered", ylabel = "", xlabel = "Time [s]")
+        )
+    f
+end
+
+# Pattern glossary
 
 # Here, you can see how sorting the same data by different values creates six distinct patterns.
 # ```@raw html
