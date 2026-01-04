@@ -8,6 +8,7 @@ desired_conditions = ["duration", "fix_avgpos_x", "fix_avgpos_y", "fix_avgpupils
 filtered_data = filter(row -> row.condition in desired_conditions, pattern_detection_values)
 filtered_data_32 = filter(row -> row.condition in desired_conditions, pattern_detection_values_32)
 
+# activate line below for interactive version
 #WGLMakie.activate!() 
 
 @testset "simple plot_topoplotseries" begin   
@@ -38,11 +39,13 @@ end
         1:151;
         positions = positions_128[1:32],
         figure_configs = (; size = (1500, 700)),
-        toposeries_configs = (; colorbar = (; label = "test")),
+        toposeries_configs = (; colorbar = (; colormap = :viridis, label = "test")),
     )
 end
 
-#= WGLMakie.activate!()
+#= 
+WGLMakie.activate!()
+GLMakie.activate!()
 f = Figure()
 interact_me = f[1, 1] = Makie.Axis(f)
 h = lines!(interact_me, [1, 2, 3])

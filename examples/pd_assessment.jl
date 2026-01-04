@@ -3,7 +3,7 @@ includet("../src/pattern_generation.jl")
 includet("../src/pattern_detection.jl")
 includet("../src/mean_filter.jl")
 
-data_all, evts = simulate_alldata()
+data_all, evts = simulate_6patterns()
 
 plot_erpimage(data_all)
 plot_erpimage(data_all; erpblur=51)

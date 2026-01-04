@@ -11,7 +11,7 @@ begin
 	using Unfold
 	using UnfoldSim
 	using CSV, DataFrames
-	using Random, Format
+	using Random
 	using CairoMakie
 	using Statistics, StatsBase, Distributions
 	using HDF5, FileIO
