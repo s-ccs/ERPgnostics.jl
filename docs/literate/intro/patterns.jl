@@ -5,7 +5,7 @@ using ERPgnostics
 using CSV
 using StatsBase
 
-data_all, evts = simulate_6patterns()
+
 dat_e, evts, times = UnfoldMakie.example_data("sort_data")
 dat_norm = dat_e[:, :] .- mean(dat_e, dims = 2) 
 
@@ -45,6 +45,7 @@ end
 # <details>
 # <summary>Click to expand</summary>
 # ```
+data_all, evts = simulate_6patterns()
 begin
     f = Figure(size = (900, 600))
     plot_erpimage!(
