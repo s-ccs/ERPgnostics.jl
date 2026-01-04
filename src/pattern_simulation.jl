@@ -21,7 +21,7 @@ end
 """
     basis_linear(evts, maxlength)
 
-Simulate linear basis. Create abline EPR pattern /.
+Simulate linear basis. Create abline EPR pattern "/".
 
 ## Arguments
 
@@ -40,7 +40,7 @@ end
 """
     basis_lognormal(evts, maxlength)
 
-Simulate lognormal basis. Creates ERP pattern called asymetrical fan |/.
+Simulate lognormal basis. Creates ERP pattern called asymetrical fan "|/".
 
 ## Arguments
 
@@ -64,7 +64,7 @@ end
 """
     basis_hanning(evts, maxlength)
 
-Simulate Hanning basis. Creates ERP pattern called symmetrical fan V.
+Simulate Hanning basis. Creates ERP pattern called symmetrical fan "V".
 
 ## Arguments
 
@@ -125,9 +125,9 @@ Columns in resulting sim\\_6patterns Data Frame to simulate this patterns: Δlat
 
 ## Arguments
 
-- `μ::Float = 0.5`\\
+- `μ::Float = 3.2`\\
     Controls mean.
-- `σ::Float = 3.2`\\
+- `σ::Float = 0.5`\\
     Controls standart deviation.
 
 ## `kwargs...`
