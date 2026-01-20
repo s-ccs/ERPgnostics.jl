@@ -4,29 +4,58 @@ using DataFrames
 using UnfoldMakie
 using ERPgnostics
 using CSV
+using StatsBase
 
-data_all, evts = simulate_6patterns()</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">([-10.041980253086226 -4.395314615239555 … -10.414711454475782 1.1209906529218596; -9.869622669655806 -5.12117488241738 … -6.230178741986519 -0.4408582037911213; … ; 8.571023452226797 -5.04699973212992 … -10.458024432552847 -9.203275752996495; 12.32716869995733 -1.6349772406590208 … -9.53955933461744 -10.699349541730339], <span class="sgr1">8192×7 DataFrame
-  Row │ durationB  continuous  condition  duration  duration_linear  latency   ⋯
-      │<span class="sgr90"> Float64    Float64     String     Float64   Float64          Int64     ⋯
-──────┼─────────────────────────────────────────────────────────────────────────
-    1 │   21.4286    0.857143  face        31.4286             20.0       24   ⋯
-    2 │   30.0      -1.42857   face        42.8571             20.0       64
-    3 │   24.2857    1.42857   face        42.8571             30.0       81
-    4 │   18.5714    2.0       car         77.1429             20.0       94
-    5 │   18.5714   -0.857143  car         65.7143             35.0      102   ⋯
-    6 │   21.4286   -0.285714  face       100.0                35.0      143
-    7 │   12.8571    0.285714  car         77.1429             35.0      180
-    8 │   12.8571   -2.0       car        100.0                15.0      204
-  ⋮   │     ⋮          ⋮           ⋮         ⋮             ⋮            ⋮      ⋱
- 8186 │   24.2857    0.285714  face        31.4286             30.0   228380   ⋯
- 8187 │   30.0       0.857143  car         42.8571             30.0   228403
- 8188 │   18.5714    0.285714  car         31.4286              5.0   228444
- 8189 │   24.2857   -0.857143  face        65.7143             20.0   228469
- 8190 │   24.2857    0.285714  face        42.8571             10.0   228495   ⋯
- 8191 │   15.7143   -0.285714  face        31.4286             30.0   228513
- 8192 │   24.2857    0.285714  face        88.5714             10.0   228541
-</span><span class="sgr36">                                                  1 column and 8177 rows omitted)</span></span></code></pre><p>Here, you can see how sorting the same data by different values creates six distinct patterns.</p><details>
-<summary>Click to expand</summary><pre><code class="language-julia hljs">begin
+
+dat_e, evts, times = UnfoldMakie.example_data(&quot;sort_data&quot;)
+dat_norm = dat_e[:, :] .- mean(dat_e, dims = 2)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">111×1997 Matrix{Float64}:
+  8.26619     1.13831    -10.0071    …   4.20055     1.31727    -7.62692
+  5.00744     1.24916    -13.6852        1.66805    -4.195      -6.74077
+  2.65408    -0.295812   -11.7626        3.22447    -2.6049     -9.82826
+  1.80794     5.49289     -8.22915       2.09395     1.42461    -7.83669
+  7.97673     8.92054     -9.70665       1.31364     1.85348   -11.805
+  6.46519     2.71374     -9.74129   …  -1.34426     6.00592    -8.37674
+  2.95614    -1.77841     -8.57608       2.66957     2.84878    -3.97453
+  6.90913    -4.46645    -10.319         1.36076     3.39582    -0.703642
+  2.95157    -7.57357    -10.755        -0.0545145   4.66602    -2.57361
+ -1.32028    -9.07127     -4.26405       1.18889     3.79041    -2.4747
+  ⋮                                  ⋱               ⋮         
+ -2.37699    -1.06456      1.25785       4.71704    -5.79566     3.60939
+ -2.6511     -4.9281       5.09376       8.93092    -3.56905     6.84224
+ -4.66856    -3.10416     -3.80792       5.75338    -2.30411    10.8593
+ -4.35416     0.0463189   -0.350539  …   1.68449    -4.08949    12.7895
+ -1.65108    -1.42303     -6.3437        6.68142    -0.779297   14.552
+ -3.17521    -1.59684     -4.26775       7.08017    -1.51609    16.2254
+ -0.0588044  -4.21402     -8.77118       3.25908    -0.541189   15.4127
+ -0.732998   -4.38835    -10.1091        3.71767     5.87849     9.37538
+ -1.06232    -3.69072     -8.87697   …   3.74106     4.23995     4.86647</code></pre><h1 id="Preprocessing"><a class="docs-heading-anchor" href="#Preprocessing">Preprocessing</a><a id="Preprocessing-1"></a><a class="docs-heading-anchor-permalink" href="#Preprocessing" title="Permalink"></a></h1><pre><code class="language-julia hljs">begin
+    f = Figure()
+    plot_erpimage!(f[1, 1], times, dat_e; axis = (; title = &quot;Raw&quot;, xlabel = &quot;&quot;), colorbar = (; label = &quot;&quot;))
+    plot_erpimage!(
+        f[1, 2],
+        times,
+        dat_e;
+        sortvalues = evts.Δlatency,
+        axis = (; title = &quot;+ sorted&quot;, ylabel = &quot;&quot;, xlabel = &quot;&quot;),
+        colorbar = (; label = &quot;&quot;),
+    )
+    plot_erpimage!(
+        f[2, 1],
+        times,
+        dat_norm;
+        sortvalues = evts.Δlatency,
+        axis = (; title = &quot;+ normalised&quot;, xlabel = &quot;Time [s]&quot;),
+        colorbar = (; label = &quot;&quot;),
+    )
+    plot_erpimage!(
+        f[2, 2], times, slow_filter(dat_norm);
+        sortvalues = evts.Δlatency,
+        axis = (; title = &quot;+ filtered&quot;, ylabel = &quot;&quot;, xlabel = &quot;Time [s]&quot;)
+        )
+    f
+end</code></pre><img src="adc565bd.png" alt="Example block output"/><p>Pattern glossary</p><p>Here, you can see how sorting the same data by different values creates six distinct patterns.</p><details>
+<summary>Click to expand</summary><pre><code class="language-julia hljs">data_all, evts = simulate_6patterns()
+begin
     f = Figure(size = (900, 600))
     plot_erpimage!(
         f[1, 1],
@@ -67,4 +96,4 @@ data_all, evts = simulate_6patterns()</code></pre><pre class="documenter-example
         sortvalues = evts.duration_linear,
         axis = (; title = &quot;Tilted bar; sorted by duration_linear&quot;, xlabel = &quot;Time [ms]&quot;, ylabelvisible = false,  yticklabelsvisible = false),
     )
-end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">GridPosition(GridLayout[3, 2] (6 children), GridLayoutBase.Span(3:3, 2:2), GridLayoutBase.Inner())</code></pre></details ><pre><code class="language-julia hljs">f</code></pre><img src="b05cae7a.png" alt="Example block output"/><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../../">« Homepage</a><a class="docs-footer-nextpage" href="../toposeries/">Toposeries with patterns »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.12.0 on <span class="colophon-date" title="Friday 13 June 2025 15:58">Friday 13 June 2025</span>. Using Julia version 1.11.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">GridPosition(GridLayout[3, 2] (6 children), GridLayoutBase.Span(3:3, 2:2), GridLayoutBase.Inner())</code></pre></details ><pre><code class="language-julia hljs">f</code></pre><img src="bd1f4cca.png" alt="Example block output"/><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../../">« Homepage</a><a class="docs-footer-nextpage" href="../toposeries/">Toposeries with patterns »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.16.1 on <span class="colophon-date" title="Tuesday 20 January 2026 09:16">Tuesday 20 January 2026</span>. Using Julia version 1.12.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
