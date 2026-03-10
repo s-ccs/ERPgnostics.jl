@@ -125,9 +125,9 @@ Columns in resulting sim\\_6patterns Data Frame to simulate this patterns: Δlat
 
 ## Arguments
 
-- `μ::Float = 0.5`\\
+- `μ::Float = 3.2`\\
     Controls mean.
-- `σ::Float = 3.2`\\
+- `σ::Float = 0.5`\\
     Controls standart deviation.
 
 ## `kwargs...`

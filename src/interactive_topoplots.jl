@@ -133,8 +133,13 @@ function inter_toposeries_image(
         "Entropy topoplots: channel - " *
         string($obs_tuple[3]) *
         ", sorting variable - " *
-        string(cond_names[$obs_tuple[2]])
-    )
+        string(cond_names[$obs_tuple[2]]) *
+        ", detector - " *
+            string(only(pattern_detection_values[
+        pattern_detection_values.channel .== $obs_tuple[3] .&&
+        pattern_detection_values.condition .== cond_names[$obs_tuple[2]], 
+        :estimate]))
+)
  
     ax = Makie.Axis(f[1, 1:5], xlabelvisible = false, title = str)
     hidespines!(ax)

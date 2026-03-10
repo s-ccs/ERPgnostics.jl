@@ -1,6 +1,6 @@
 
-function slow_filter(data_init)
-    return UnfoldMakie.imfilter(data_init, UnfoldMakie.Kernel.gaussian((0, max(50, 0))))
+function slow_filter(data_init; mu = 0, sigma = 3)
+    return UnfoldMakie.imfilter(data_init, UnfoldMakie.Kernel.gaussian((mu, max(sigma, 0))))
 end
 
 function fast_filter!(dat_filtered, kernel, dat) # broken

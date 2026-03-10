@@ -1,9 +1,11 @@
 begin
-    using Pkg
+    import Pkg
+    cd(".")
     stub = pwd()
     Pkg.activate(stub)
     using Revise
     Revise.retry()
+    include("$(stub)/test/setup.jl")
     using ERPgnostics
     using JuliaFormatter
     ENV["JULIA_DEBUG"] = "ERPgnostics"
@@ -17,7 +19,7 @@ begin
     cd("$(stub)/test")
     Pkg.activate("$(stub)/test")
 end
-
+cd("$(stub)")
 
 include("/store/users/mikheev/projects/erpgnostics_dev/dev/ERPgnostics/docs/make.jl")
 
