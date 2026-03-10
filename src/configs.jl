@@ -18,7 +18,7 @@ function supportive_defaults(cfg_symb::Symbol)
             visual = (
                 label_scatter = (markersize = 10, strokewidth = 2),
                 contours = (; levels = 0),
-                colormap = Reverse(:RdGy_4),
+                colormap = Reverse(:RdGy),
             ),
             colorbar = (; label = "Pattern detection function value", height = 300),
             layout = (; use_colorbar = true),
